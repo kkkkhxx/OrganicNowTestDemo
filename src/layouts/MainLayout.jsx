@@ -1,3 +1,4 @@
+// Layout.jsx
 import React, { useRef, useState, useMemo } from 'react';
 import { Button } from 'primereact/button';
 import { Badge } from 'primereact/badge';
@@ -8,6 +9,7 @@ import { Menu } from 'primereact/menu';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
+import '../assets/css/topbar.css'; // ✅ ใช้ global CSS แล้ว
 
 const Topbar = ({ notifications = 0 }) => {
   const profileMenu = useRef(null);
@@ -27,28 +29,16 @@ const Topbar = ({ notifications = 0 }) => {
   ]), []);
 
   return (
-    <header
-      style={{
-        position: 'fixed',
-        top: 12,
-        right: 12,
-        left: 'auto',
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem'
-      }}
-    >
+    <header className="topbar">
       {/* Bell */}
       <div className="p-overlay-badge">
         <Button
           icon="pi pi-bell"
-          className="p-button-rounded p-button-text"
+          className="p-button-rounded p-button-text topbar-btn"
           aria-label="Notifications"
           onClick={() => console.log('Notifications')}
           tooltip="Notifications"
           tooltipOptions={{ position: 'bottom' }}
-          style={{ width: '2.5rem', height: '2.5rem', color: '#0084F7' }}
         />
         {notifications > 0 && <Badge value={notifications} severity="danger" />}
       </div>
@@ -57,44 +47,19 @@ const Topbar = ({ notifications = 0 }) => {
       <span>
         <Button
           icon="pi pi-cog"
-          className="p-button-rounded p-button-text"
+          className="p-button-rounded p-button-text topbar-btn"
           aria-label="Settings"
           onClick={(e) => settingsMenu.current.toggle(e)}
           tooltip="Settings"
           tooltipOptions={{ position: 'bottom' }}
-          style={{ width: '2.5rem', height: '2.5rem', color: '#0084F7' }}
         />
         <Menu model={settingsMenuItems} popup ref={settingsMenu} appendTo={document.body} />
       </span>
 
       {/* Profile */}
-      <div
-        onClick={(e) => profileMenu.current.toggle(e)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.4rem',
-          backgroundColor: '#57B1FF',
-          borderRadius: '9999px',
-          padding: '0.3rem 0.8rem 0.3rem 0.3rem',
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          border: '1px solid rgba(0,0,0,0.05)'
-        }}
-      >
-        <Avatar
-          icon="pi pi-user"
-          shape="circle"
-          style={{
-            width: '2rem',
-            height: '2rem',
-            backgroundColor: '#0084F7',
-            color: '#fff'
-          }}
-        />
-        <span style={{ color: '#fff', fontWeight: 500, fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
-          PiNongAllNew
-        </span>
+      <div className="topbar-profile" onClick={(e) => profileMenu.current.toggle(e)}>
+        <Avatar icon="pi pi-user" shape="circle" className="topbar-avatar" />
+        <span className="topbar-username">PiNongAllNew</span>
         <Menu model={profileMenuItems} popup ref={profileMenu} appendTo={document.body} />
       </div>
     </header>
@@ -105,17 +70,9 @@ const Layout = ({ children }) => {
   const [notifications] = useState(3);
 
   return (
-    <div
-      style={{
-        backgroundColor: '#E3F2FD',
-        minHeight: '100vh',
-        width: '100%',
-        margin: 0
-      }}
-    >
+    <div className="layout-container">
       <Topbar notifications={notifications} />
-    
-      <main style={{ paddingTop: 80 }}>{children}</main>
+      <main className="layout-main">{children}</main>
     </div>
   );
 };
