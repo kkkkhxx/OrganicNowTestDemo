@@ -4,6 +4,9 @@ import React, { Suspense } from "react";
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+// Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import Land from "./pages/land";
 import Test from "./pages/test";
 import Test2 from "./pages/test2";   
