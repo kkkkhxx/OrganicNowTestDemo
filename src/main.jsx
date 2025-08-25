@@ -12,12 +12,9 @@ import Test from "./pages/test";
 import Test2 from "./pages/test2";   
 
 const router = createBrowserRouter([
-  { path: "/", 
-    element: <Land /> },
-  { path: "/test", 
-    element: <Test /> },
-  { path: "/test2", 
-    element: <Test2 /> },
+  { path: "/", element: <Land /> },
+  { path: "/test", element: <Test /> },
+  { path: "/test2", element: <Test2 /> },
 ]
 );
 

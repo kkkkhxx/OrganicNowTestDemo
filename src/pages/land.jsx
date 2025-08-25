@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NavBar from "../component/navbar";
+import SideBar from "../component/sidebar";
 
 function Land() {
   const [task, setTask] = useState("");
@@ -16,7 +16,7 @@ function Land() {
 
   return (
     <div className="container">
-        <NavBar />
+        <SideBar />
       <h1 class="text-3xl underline">
         Hello world!
       </h1>

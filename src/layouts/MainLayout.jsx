@@ -9,7 +9,7 @@ import { Menu } from 'primereact/menu';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-import '../assets/css/topbar.css'; // ✅ ใช้ global CSS แล้ว
+import '../assets/css/topbar.css';
 
 const Topbar = ({ notifications = 0 }) => {
   const profileMenu = useRef(null);
@@ -67,7 +67,7 @@ const Topbar = ({ notifications = 0 }) => {
 };
 
 const Layout = ({ children }) => {
-  const [notifications] = useState(3);
+  const [notifications] = useState(4);
 
   return (
     <div className="layout-container">
