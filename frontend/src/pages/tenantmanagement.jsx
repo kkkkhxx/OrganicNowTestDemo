@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import SideBar from "../component/sidebar";
 import Layout from "../component/layout";
+import Modal from "../component/modal";
 import "../assets/css/tenantmanagement.css";
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -75,7 +76,6 @@ function TenantManagement() {
     <Layout title="Tenant Management" icon="bi bi-people" notifications={3}>
       <div className="container-fluid">
         <div className="row min-vh-100">
-
           {/* Main */}
           <div className="col-lg-11 p-4">
             {/* Toolbar Card */}
@@ -109,7 +109,13 @@ function TenantManagement() {
                     <button className="btn btn-outline-light text-danger border-0">
                       <i className="bi bi-trash"></i>
                     </button>
-                    <button className="btn btn-primary">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal"
+                      // onClick={() => console.log("ปุ่ม Create Tenant ถูกคลิก")}
+                    >
                       <i className="bi bi-plus-lg me-1"></i> Create Tenant
                     </button>
                   </div>
@@ -130,15 +136,33 @@ function TenantManagement() {
                         aria-label="Select all rows"
                       />
                     </th>
-                    <th className="text-center align-middle header-color">Order</th>
-                    <th className="text-center align-middle header-color">First Name</th>
-                    <th className="text-center align-middle header-color">Last Name</th>
-                    <th className="text-center align-middle header-color">Floor</th>
-                    <th className="text-center align-middle header-color">Room</th>
-                    <th className="text-center align-middle header-color">Package</th>
-                    <th className="text-center align-middle header-color">Start Date</th>
-                    <th className="text-center align-middle header-color">Phone Number</th>
-                    <th className="text-center align-middle header-color">Actions</th>
+                    <th className="text-center align-middle header-color">
+                      Order
+                    </th>
+                    <th className="text-center align-middle header-color">
+                      First Name
+                    </th>
+                    <th className="text-center align-middle header-color">
+                      Last Name
+                    </th>
+                    <th className="text-center align-middle header-color">
+                      Floor
+                    </th>
+                    <th className="text-center align-middle header-color">
+                      Room
+                    </th>
+                    <th className="text-center align-middle header-color">
+                      Package
+                    </th>
+                    <th className="text-center align-middle header-color">
+                      Start Date
+                    </th>
+                    <th className="text-center align-middle header-color">
+                      Phone Number
+                    </th>
+                    <th className="text-center align-middle header-color">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
 
@@ -155,14 +179,30 @@ function TenantManagement() {
                           />
                         </td>
 
-                        <td className="align-middle text-center">{item.order}</td>
-                        <td className="align-middle text-center">{item.firstName}</td>
-                        <td className="align-middle text-center">{item.lastName}</td>
-                        <td className="align-middle text-center">{item.floor}</td>
-                        <td className="align-middle text-center">{item.room}</td>
-                        <td className="align-middle text-center">{item.package}</td>
-                        <td className="align-middle text-center">{item.startDate}</td>
-                        <td className="align-middle text-center">{item.phoneNumber}</td>
+                        <td className="align-middle text-center">
+                          {item.order}
+                        </td>
+                        <td className="align-middle text-center">
+                          {item.firstName}
+                        </td>
+                        <td className="align-middle text-center">
+                          {item.lastName}
+                        </td>
+                        <td className="align-middle text-center">
+                          {item.floor}
+                        </td>
+                        <td className="align-middle text-center">
+                          {item.room}
+                        </td>
+                        <td className="align-middle text-center">
+                          {item.package}
+                        </td>
+                        <td className="align-middle text-center">
+                          {item.startDate}
+                        </td>
+                        <td className="align-middle text-center">
+                          {item.phoneNumber}
+                        </td>
 
                         <td className="align-middle text-center">
                           <button
@@ -197,6 +237,15 @@ function TenantManagement() {
           {/* /Main */}
         </div>
       </div>
+      <Modal
+        id="exampleModal"
+        title="Add User"
+        icon="bi bi-person-plus"
+        size="modal-lg"
+        scrollable="modal-dialog-scrollable"
+      >
+        <p>Form ใส่เนื้อหา</p>
+      </Modal>
     </Layout>
   );
 }
