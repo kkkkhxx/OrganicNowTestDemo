@@ -8,6 +8,7 @@ import Test from "./pages/test";
 import Test2 from "./pages/test2";
 import TenantManagement from "./pages/tenantmanagement";
 import TenantDetail from "./pages/tenantdetail";
+import RoomDetail from "./pages/roomdetail";
 
 const router = createBrowserRouter([
   { path: "/", element: <Dashboard /> },
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
   { path: "/test2", element: <Test2 /> },
   { path: "/TenantManagement", element: <TenantManagement /> },
   { path: "/TenantDetail", element: <TenantDetail /> },
+  { path: "/RoomDetail", element: <RoomDetail /> },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

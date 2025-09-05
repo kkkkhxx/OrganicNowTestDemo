@@ -2,29 +2,47 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Layout from "../component/layout";
 import Modal from "../component/modal";
-import "../assets/css/tenantmanagement.css";
+import "../assets/css/roomdetail.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-function TenantDetail() {
-  const tenantInfoRef = useRef(null);
-  const [leftHeight, setLeftHeight] = useState(0);
+function RoomDetail() {
+  const [data, setData] = useState([
+    {
+      order: 1,
+      RID: "R01",
+      assets: "Light",
+      status: "Active",
+    },
+  ]);
+  // const tenantInfoRef = useRef(null);
+  // const [leftHeight, setLeftHeight] = useState(0);
 
-  useEffect(() => {
-    if (!tenantInfoRef.current) return;
+  // useEffect(() => {
+  //   if (!tenantInfoRef.current) return;
 
-    const observer = new ResizeObserver(([entry]) => {
-      setLeftHeight(entry.contentRect.height);
-    });
+  const observer = new ResizeObserver(([entry]) => {
+    setLeftHeight(entry.contentRect.height);
+  });
 
-    observer.observe(tenantInfoRef.current);
+  //   observer.observe(tenantInfoRef.current);
 
-    return () => observer.disconnect();
-  }, []);
+  //   return () => observer.disconnect();
+  // }, []);
 
   const handleDelete = (item) => {
     console.log("Delete: ", item);
+  };
+
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  const handleSelectAll = () => {
+    if (selectedItems.length === data.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(data.map((_, idx) => idx));
+    }
   };
 
   const handleSelectRow = (rowIndex) => {
@@ -35,15 +53,17 @@ function TenantDetail() {
     );
   };
 
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { tenant, fullName } = location.state || {};
-  
-  useEffect(() => {
-    if (!tenant) {
-      navigate("/tenantmanagement"); // redirect ถ้าไม่มีข้อมูล
-    }
-  }, [tenant, navigate]);
+  const isAllSelected = data.length > 0 && selectedItems.length === data.length;
+
+  // const navigate = useNavigate();
+  // const location = useLocation();
+  // const { tenant, fullName } = location.state || {};
+
+  // useEffect(() => {
+  //   if (!tenant) {
+  //     navigate("/tenantmanagement"); // redirect ถ้าไม่มีข้อมูล
+  //   }
+  // }, [tenant, navigate]);
 
   // อยู่ในฟังก์ชัน TenantDetail ด้านบน return
   const getStatusColor = (status) => {
@@ -61,7 +81,7 @@ function TenantDetail() {
   };
 
   return (
-    <Layout title="Tenant Management" icon="bi bi-people" notifications={3}>
+    <Layout title="Room Management" icon="bi bi-folder" notifications={3}>
       <div className="container-fluid">
         <div className="row min-vh-100">
           {/* Main */}
@@ -74,15 +94,17 @@ function TenantDetail() {
                   <div className="d-flex align-items-center gap-2">
                     <span
                       className="breadcrumb-link text-primary"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => navigate("/tenantmanagement")}
+                      // style={{ cursor: "pointer" }}
+                      // onClick={() => navigate("/tenantmanagement")}
                     >
-                      Tenant Management
+                      Room Management
                     </span>
-                    <span className="text-muted">›</span>
-                    <span className="breadcrumb-current">
-                      {tenant ? `${tenant.firstName} ${tenant.lastName}` : "Tenant"}
-                    </span>
+                    {/* <span className="text-muted">›</span>
+                      <span className="breadcrumb-current">
+                        {tenant
+                          ? `${tenant.firstName} ${tenant.lastName}`
+                          : "Tenant"}
+                      </span> */}
                   </div>
                   {/* Right cluster: Edit Tenant Button */}
                   <div className="d-flex align-items-center gap-2">
@@ -106,11 +128,29 @@ function TenantDetail() {
               {/* code here */}
               <div className="row g-4">
                 {/* Tenant Info */}
-                <div className="col-lg-4" ref={tenantInfoRef}>
+                <div className="col-lg-4">
                   <div className="card border-0 shadow-sm">
                     <div className="card-body">
-                      <h5 className="card-title">Tenant Information</h5>
+                      <h5 className="card-title">Room Information</h5>
 
+                      <p>
+                        <span className="label">Floor:</span>
+                        <span className="value">1</span>
+                      </p>
+                      <p>
+                        <span className="label">Room:</span>
+                        <span className="value">101</span>
+                      </p>
+                      <p>
+                        <span className="label">Status:</span>
+                        <span className="value">Unavailable</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="card border-0 shadow-sm mt-3">
+                    <div className="card-body">
+                      <h5 className="card-title">Current Tenant</h5>
                       <p>
                         <span className="label">First Name:</span>
                         <span className="value">John</span>
@@ -120,16 +160,8 @@ function TenantDetail() {
                         <span className="value">Doe</span>
                       </p>
                       <p>
-                        <span className="label">National ID:</span>
-                        <span className="value">1-2345-67890-12-3</span>
-                      </p>
-                      <p>
                         <span className="label">Phone Number:</span>
                         <span className="value">012-345-6789</span>
-                      </p>
-                      <p>
-                        <span className="label">Email:</span>
-                        <span className="value">JohnDoe@gmail.com</span>
                       </p>
                       <p>
                         <span className="label">Package:</span>
@@ -153,20 +185,6 @@ function TenantDetail() {
                       </p>
                     </div>
                   </div>
-
-                  <div className="card border-0 shadow-sm mt-3">
-                    <div className="card-body">
-                      <h5 className="card-title">Room Information</h5>
-                      <p>
-                        <span className="label">Floor:</span>
-                        <span className="value">1</span>
-                      </p>
-                      <p>
-                        <span className="label">Room:</span>
-                        <span className="value">101</span>
-                      </p>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Payment & Request History */}
@@ -174,7 +192,7 @@ function TenantDetail() {
                   <div
                     className="card border-0 shadow-sm flex-grow-1"
                     style={{
-                      height: `${leftHeight}px`,
+                      // height: `${leftHeight}px`,
                       overflowY: "auto",
                       paddingRight: "8px",
                     }}
@@ -195,7 +213,19 @@ function TenantDetail() {
                             type="button"
                             role="tab"
                           >
-                            Payment History
+                            Assets
+                          </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                          <button
+                            className="nav-link"
+                            id="request-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#request"
+                            type="button"
+                            role="tab"
+                          >
+                            Request History
                           </button>
                         </li>
                       </ul>
@@ -209,6 +239,97 @@ function TenantDetail() {
                         <div
                           className="tab-pane fade show active"
                           id="payment"
+                          role="tabpanel"
+                        >
+                          <table className="table text-nowrap">
+                            <thead>
+                              <tr>
+                                <th className="text-center header-color checkbox-cell">
+                                  <input
+                                    type="checkbox"
+                                    checked={isAllSelected}
+                                    onChange={handleSelectAll}
+                                    aria-label="Select all rows"
+                                  />
+                                </th>
+                                <th className="text-center align-middle header-color">
+                                  Order
+                                </th>
+                                <th className="text-center align-middle header-color">
+                                  RID
+                                </th>
+                                <th className="text-center align-middle header-color">
+                                  Assets
+                                </th>
+                                <th className="text-center align-middle header-color">
+                                  Status
+                                </th>
+                                <th className="text-center align-middle header-color">
+                                  <div className="btn-container">
+                                    <button
+                                      type="button"
+                                      className="btn btn-primary"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#exampleModal"
+                                    >
+                                      <i className="bi bi-pencil me-1"></i> Add
+                                    </button>
+                                  </div>
+                                </th>
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              {data.length > 0 ? (
+                                data.map((item, idx) => (
+                                  <tr key={idx}>
+                                    <td className="align-middle text-center checkbox-cell">
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedItems.includes(idx)}
+                                        onChange={() => handleSelectRow(idx)}
+                                        aria-label={`Select row ${idx + 1}`}
+                                      />
+                                    </td>
+
+                                    <td className="align-middle text-center">
+                                      {item.order}
+                                    </td>
+                                    <td className="align-middle text-center">
+                                      {item.RID}
+                                    </td>
+                                    <td className="align-middle text-center">
+                                      {item.assets}
+                                    </td>
+                                    <td className="align-middle text-center">
+                                      {item.status}
+                                    </td>
+                                    <td className="align-middle text-center">
+                                      <button
+                                        className="btn btn-sm form-Button-Del me-1"
+                                        onClick={() => handleDelete(item)}
+                                        aria-label="Delete row"
+                                      >
+                                        <i className="bi bi-trash-fill"></i>
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td colSpan="11" className="text-center">
+                                    Data Not Found
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Request History */}
+                        <div
+                          className="tab-pane fade"
+                          id="request"
                           role="tabpanel"
                         >
                           <div className="row row-cols-1 row-cols-md-2 g-3">
@@ -277,15 +398,6 @@ function TenantDetail() {
                             ))}
                           </div>
                         </div>
-
-                        {/* Request History */}
-                        <div
-                          className="tab-pane fade"
-                          id="request"
-                          role="tabpanel"
-                        >
-                          <p className="mb-0">No requests found.</p>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -309,4 +421,4 @@ function TenantDetail() {
   );
 }
 
-export default TenantDetail;
+export default RoomDetail;
