@@ -1,0 +1,15 @@
+.status-card {
+  background-color: #f8f9fa;
+  border-left: 5px solid #0d6efd;
+  transition: 0.3s ease;
+}
+.status-card:hover {
+  background-color: #e9ecef;
+}
+
+.status-card.complete {
+  border-left-color: #198754;
+}
+.status-card.in-process {
+  border-left-color: #ffc107;
+}

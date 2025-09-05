@@ -1,17 +1,34 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../component/layout";
 import Modal from "../component/modal";
+import Pagination from "../component/pagination";
+import { pageSize as defaultPageSize} from "../config_variable";
 import "../assets/css/tenantmanagement.css";
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 function TenantManagement() {
-  /* -------------------- Data (ไม่เปลี่ยนข้อมูล) -------------------- */
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      fetchData(page);
+    }
+  };
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    fetchData(1);
+    setCurrentPage(1);
+  };
   const [data, setData] = useState([
     {
       order: 1,
-      firstName: "John Doe",
+      firstName: "John",
       lastName: "Doe",
       floor: "5th",
       room: "101",
@@ -21,7 +38,7 @@ function TenantManagement() {
     },
     {
       order: 2,
-      firstName: "Jane Smith",
+      firstName: "Jane",
       lastName: "Smith",
       floor: "3rd",
       room: "205",
@@ -31,7 +48,7 @@ function TenantManagement() {
     },
     {
       order: 3,
-      firstName: "Alice Johnson",
+      firstName: "Alice",
       lastName: "Johnson",
       floor: "7th",
       room: "707",
@@ -41,10 +58,8 @@ function TenantManagement() {
     },
   ]);
 
-  /* -------------------- Selection State -------------------- */
-  const [selectedItems, setSelectedItems] = useState([]); // เก็บ index ของแถวที่เลือก
+  const [selectedItems, setSelectedItems] = useState([]);
 
-  /* -------------------- Handlers -------------------- */
   const handleUpdate = (item) => {
     console.log("Update: ", item);
   };
@@ -71,7 +86,18 @@ function TenantManagement() {
 
   const isAllSelected = data.length > 0 && selectedItems.length === data.length;
 
-  /* -------------------- Render -------------------- */
+  const navigate = useNavigate();
+
+  const handleViewTenant = (tenant) => {
+    navigate("/tenantdetail", {
+      state: {
+        tenant: tenant,
+        fullName: `${tenant.firstName} ${tenant.lastName}`,
+      },
+    });
+  };
+
+
   return (
     <Layout title="Tenant Management" icon="bi bi-people" notifications={3}>
       <div className="container-fluid">
@@ -114,7 +140,6 @@ function TenantManagement() {
                       className="btn btn-primary"
                       data-bs-toggle="modal"
                       data-bs-target="#exampleModal"
-                      // onClick={() => console.log("ปุ่ม Create Tenant ถูกคลิก")}
                     >
                       <i className="bi bi-plus-lg me-1"></i> Create Tenant
                     </button>
@@ -139,25 +164,25 @@ function TenantManagement() {
                     <th className="text-center align-middle header-color">
                       Order
                     </th>
-                    <th className="text-center align-middle header-color">
+                    <th className="text-start align-middle header-color">
                       First Name
                     </th>
-                    <th className="text-center align-middle header-color">
+                    <th className="text-start align-middle header-color">
                       Last Name
                     </th>
-                    <th className="text-center align-middle header-color">
+                    <th className="text-start align-middle header-color">
                       Floor
                     </th>
-                    <th className="text-center align-middle header-color">
+                    <th className="text-start align-middle header-color">
                       Room
                     </th>
-                    <th className="text-center align-middle header-color">
+                    <th className="text-start align-middle header-color">
                       Package
                     </th>
-                    <th className="text-center align-middle header-color">
+                    <th className="text-start align-middle header-color">
                       Start Date
                     </th>
-                    <th className="text-center align-middle header-color">
+                    <th className="text-start align-middle header-color">
                       Phone Number
                     </th>
                     <th className="text-center align-middle header-color">
@@ -182,35 +207,40 @@ function TenantManagement() {
                         <td className="align-middle text-center">
                           {item.order}
                         </td>
-                        <td className="align-middle text-center">
+                        <td className="align-middle text-start">
                           {item.firstName}
                         </td>
-                        <td className="align-middle text-center">
+                        <td className="align-middle text-start">
                           {item.lastName}
                         </td>
-                        <td className="align-middle text-center">
+                        <td className="align-middle text-start">
                           {item.floor}
                         </td>
-                        <td className="align-middle text-center">
-                          {item.room}
-                        </td>
-                        <td className="align-middle text-center">
+                        <td className="align-middle text-start">{item.room}</td>
+                        <td className="align-middle text-start">
                           {item.package}
                         </td>
-                        <td className="align-middle text-center">
+                        <td className="align-middle text-start">
                           {item.startDate}
                         </td>
-                        <td className="align-middle text-center">
+                        <td className="align-middle text-start">
                           {item.phoneNumber}
                         </td>
 
                         <td className="align-middle text-center">
                           <button
                             className="btn btn-sm form-Button-Edit me-1"
+                            onClick={() => handleViewTenant(item)}
+                            aria-label="Edit row"
+                          >
+                            <i className="bi bi-eye-fill"></i>
+                          </button>
+                          <button
+                            className="btn btn-sm form-Button-Edit me-1"
                             onClick={() => handleUpdate(item)}
                             aria-label="Edit row"
                           >
-                            <i className="bi bi-pencil-fill"></i>
+                            <i className="bi bi-file-earmark-pdf-fill"></i>
                           </button>
                           <button
                             className="btn btn-sm form-Button-Del me-1"
@@ -232,6 +262,13 @@ function TenantManagement() {
                 </tbody>
               </table>
             </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              totalRecords={totalRecords}
+              onPageSizeChange={handlePageSizeChange}
+            />
             {/* /Data Table */}
           </div>
           {/* /Main */}
