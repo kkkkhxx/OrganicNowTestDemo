@@ -8,6 +8,15 @@
   background-color: white;
   box-sizing: border-box;
 }
+.table-wrapper-detail {
+  width: calc(100% + 80px);  
+  margin-right: -32px;       
+  overflow-x:hidden;
+  border-radius: 10px;
+  margin: 20px;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
 /* ทำให้ card ด้านบนตาราง ยืดขวาเหมือนกัน */
 .toolbar-wrapper {
   width: calc(100% + 80px);  /* ยืดออกขวา */
@@ -105,6 +114,65 @@
   padding-left: 0;
   padding-right: 32px;   /* ขอบขวาเท่า box แดง */
   max-width: none;       /* ยืดได้สุดจอ */
+}
+/* ✅ สถานะการจ่ายเงิน: พาสเทลตาม Figma */
+.status-card {
+  border-radius: 12px;
+  padding: 16px;
+  color: #333;
+  font-size: 0.95rem;
+  background-color: #f8f9fa;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+/* เขียว: Complete */
+.status-complete {
+  background-color: #d4f4dd;
+}
+
+/* เหลือง: In process */
+.status-warning {
+  background-color: #fff8d4;
+}
+
+/* แดง: Failed / Overdue */
+.status-danger {
+  background-color: #f8d4d4;
+}
+
+/* เทา: Default */
+.status-default {
+  background-color: #f1f1f1;
+}
+.label {
+  color: #888;
+  font-weight: normal;
+}
+
+.value {
+  color: #000;
+  font-weight: bold;
+}
+
+.card-body p {
+  display: grid;
+  grid-template-columns: 140px auto;
+  column-gap: 8px;
+  margin-bottom: 8px;
+}
+.package-row {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ✅ แก้ badge ไม่ให้ยืด และจัดกลางแนวตั้ง */
+.package-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  text-align: center;
 }
 
 /* ✅ Responsive สำหรับจอมือถือ */

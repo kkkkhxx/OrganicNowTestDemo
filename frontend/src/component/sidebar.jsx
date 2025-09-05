@@ -8,16 +8,16 @@ export default function SideBar() {
 
   return (
     <aside className="sidebar">
+
       <nav className="sidebar-icons">
         <NavLink to="/" end className={linkClass}><i className="pi pi-home icon-lg" /></NavLink>
         <NavLink to="/test" className={linkClass}><i className="pi pi-cog icon-lg" /></NavLink>
         <NavLink to="/test2" className={linkClass}><i className="pi pi-user icon-lg" /> </NavLink>
+        <NavLink to="/" end className={linkClass}><i className="pi pi-home icon-lg" /></NavLink>
+        <NavLink to="/test" className={linkClass}><i className="pi pi-cog icon-lg" /></NavLink>
+        <NavLink to="/test2" className={linkClass}><i className="pi pi-user icon-lg" /> </NavLink>
+        
       </nav>
-
-      <button className="sidebar-logout">
-        <i className="pi pi-sign-out icon-lg" />
-        <span className="logout-text">Logout</span>
-      </button>
     </aside>
   );
 }
