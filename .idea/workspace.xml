@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="30dbd1c0-0ef4-43ef-a2b6-93c9f26bece8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/controller/RoomController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/controller/RoomController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/dashboard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/model/PackagePlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/model/PackagePlan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/service/RoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/service/RoomService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/service/impl/RoomServiceImpl.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,10 +19,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 6
@@ -46,7 +43,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.BackendApplication.executor": "Run",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "new-writing-api",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/New/Desktop/OrganicNow",
     "node.js.detected.package.eslint": "true",
@@ -57,7 +54,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "settings.editor.selected.configurable": "configurable.group.editor",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -181,7 +178,8 @@
       <workItem from="1757133788304" duration="260000" />
       <workItem from="1757134135514" duration="1993000" />
       <workItem from="1757136152254" duration="3592000" />
-      <workItem from="1757144232252" duration="4881000" />
+      <workItem from="1757144232252" duration="5288000" />
+      <workItem from="1757157397250" duration="9246000" />
     </task>
     <servers />
   </component>
