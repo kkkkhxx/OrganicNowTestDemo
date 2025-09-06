@@ -8,6 +8,27 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 function Dashboard() {
+    const [rooms, setRooms] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch("http://localhost:8080/rooms")
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return res.json();
+            })
+            .then((data) => {
+                setRooms(data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching rooms:", error);
+                setLoading(false);
+            });
+    }, []);
+
   return (
     <Layout title="Tenant Management" icon="bi bi-people" notifications={3}>
       <div className="container-fluid">
