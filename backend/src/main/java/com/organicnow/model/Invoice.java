@@ -18,7 +18,7 @@ public class Invoice {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "contact_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_invoice_contact"))
-    private Contact contact;   // Contact_id.Contact
+    private Contract contact;   // Contact_id.Contact
 
     @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate; // วันที่ออกใบแจ้งหนี้

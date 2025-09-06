@@ -8,13 +8,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "contact")
+@Table(name = "contract")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Contract {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "contact_id")
+    @Column(name = "contract_id")
     private Long id;   // Contact_id
 
     @ManyToOne(fetch = FetchType.LAZY)
