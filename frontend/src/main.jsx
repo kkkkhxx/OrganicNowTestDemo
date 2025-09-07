@@ -9,6 +9,8 @@ import Test2 from "./pages/test2";
 import TenantManagement from "./pages/tenantmanagement";
 import TenantDetail from "./pages/tenantdetail";
 import RoomDetail from "./pages/roomdetail";
+import Invoicemanagement from "./pages/Invoicemanagement";
+import InvoiceDetails from "./pages/Invoicedetails";
 
 const router = createBrowserRouter([
   { path: "/", element: <Dashboard /> },
@@ -17,6 +19,8 @@ const router = createBrowserRouter([
   { path: "/TenantManagement", element: <TenantManagement /> },
   { path: "/TenantDetail", element: <TenantDetail /> },
   { path: "/RoomDetail", element: <RoomDetail /> },
+  { path: "/Invoicemanagement", element: <Invoicemanagement/>},
+  { path: "/InvoiceDetails", element: <InvoiceDetails/>},
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
