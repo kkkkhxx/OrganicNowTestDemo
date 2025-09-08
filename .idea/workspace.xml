@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="30dbd1c0-0ef4-43ef-a2b6-93c9f26bece8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/assets/css/roomdetail.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/assets/css/roomdetail.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/controller/ContactTypeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/controller/ContractTypeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/controller/PackagePlanController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/controller/PackagePlanController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/service/ContactTypeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/service/ContactTypeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/service/PackagePlanService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/organicnow/service/PackagePlanService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -180,6 +183,9 @@
       <workItem from="1757157397250" duration="13233000" />
       <workItem from="1757174945102" duration="17000" />
       <workItem from="1757256019463" duration="1000" />
+      <workItem from="1757342356665" duration="2111000" />
+      <workItem from="1757345866714" duration="519000" />
+      <workItem from="1757346438576" duration="697000" />
     </task>
     <servers />
   </component>

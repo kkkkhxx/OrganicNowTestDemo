@@ -9,11 +9,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/contact-types")
 @CrossOrigin(origins = "http://localhost:5173")
-public class ContactTypeController {
+public class ContractTypeController {
 
     private final ContactTypeService contactTypeService;
 
-    public ContactTypeController(ContactTypeService contactTypeService) {
+    public ContractTypeController(ContactTypeService contactTypeService) {
         this.contactTypeService = contactTypeService;
     }
 
