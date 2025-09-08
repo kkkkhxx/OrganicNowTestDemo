@@ -99,14 +99,14 @@ function TenantManagement() {
 
 
   return (
-    <Layout title="Tenant Management" icon="bi bi-people" notifications={3}>
+    <Layout title="Tenant Management" icon="pi pi-user" notifications={3}>
       <div className="container-fluid">
         <div className="row min-vh-100">
           {/* Main */}
           <div className="col-lg-11 p-4">
             {/* Toolbar Card */}
             <div className="toolbar-wrapper card border-0 bg-white">
-              <div className="card-header bg-white border-0">
+              <div className="card-header bg-white border-0 rounded-3">
                 <div className="tm-toolbar d-flex justify-content-between align-items-center">
                   {/* Left cluster: Filter / Sort / Search */}
                   <div className="d-flex align-items-center gap-3">
