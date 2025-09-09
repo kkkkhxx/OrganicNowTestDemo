@@ -7,66 +7,74 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-function PackageManagement() {
-    // --------- DATA ----------
-    const [packages, setPackages] = useState([
-        { id: 1, label: "3 Month", months: 3, rent: 5500, createDate: "2024-12-31", active: true,  color: "#FFC73B" },
-        { id: 2, label: "6 Month", months: 6, rent: 5000, createDate: "2025-01-30", active: true,  color: "#EF98C4" },
-        { id: 3, label: "9 Month", months: 9, rent: 4500, createDate: "2025-01-30", active: true,  color: "#87C6FF" },
-        { id: 4, label: "1 Year",  months: 12, rent: 4000, createDate: "2025-01-30", active: true,  color: "#9691F9" },
-        { id: 5, label: "3 Month", months: 3, rent: 6000, createDate: "2025-01-30", active: true,  color: "#FFC73B" },
-        { id: 6, label: "6 Month", months: 6, rent: 5500, createDate: "2025-01-30", active: false, color: "#EF98C4" },
-        { id: 7, label: "9 Month", months: 9, rent: 5000, createDate: "2025-01-30", active: true,  color: "#87C6FF" },
-        { id: 8, label: "1 Year",  months: 12, rent: 4500, createDate: "2025-01-30", active: true,  color: "#9691F9" },
+// ===== Helper: บวกเดือนให้กับวันที่ (yyyy-mm-dd) =====
+function addMonthsISO(isoDate, months) {
+    if (!isoDate) return "";
+    const [y, m, d] = isoDate.split("-").map(Number);
+    const dt = new Date(y, m - 1, d);
+    dt.setMonth(dt.getMonth() + Number(months || 0));
+    const yyyy = dt.getFullYear();
+    const mm = String(dt.getMonth() + 1).padStart(2, "0");
+    const dd = String(dt.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+function MaintenanceSchedule() {
+    // --------- DATA (ตัวอย่างตามภาพ) ----------
+    const [schedules, setSchedules] = useState([
+        { id: 1, scope: "Asset",    asset: "Air conditioner", cycle: 6,  notify: 7, lastDate: "2024-12-01", nextDate: "2025-06-01" },
+        { id: 2, scope: "Building", asset: "Plumbing",        cycle: 3,  notify: 7, lastDate: "2024-12-01", nextDate: "2025-06-01" },
+        { id: 3, scope: "Building", asset: "Water leak",      cycle: 12, notify: 7, lastDate: "2024-12-01", nextDate: "2025-06-01" },
     ]);
 
     // --------- TABLE CONTROLS ----------
     const [search, setSearch] = useState("");
-    const [sortAsc, setSortAsc] = useState(true);
+    const [sortAsc, setSortAsc] = useState(true); // sort ตาม lastDate
 
     const [filters, setFilters] = useState({
-        label: "ALL",
-        active: "ALL",
-        rentMin: "",
-        rentMax: "",
+        scope: "ALL",
+        cycleMin: "",
+        cycleMax: "",
+        notifyMin: "",
+        notifyMax: "",
         dateFrom: "",
         dateTo: "",
     });
     const clearFilters = () =>
-        setFilters({ label: "ALL", active: "ALL", rentMin: "", rentMax: "", dateFrom: "", dateTo: "" });
+        setFilters({ scope: "ALL", cycleMin: "", cycleMax: "", notifyMin: "", notifyMax: "", dateFrom: "", dateTo: "" });
 
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
-        let rows = [...packages];
+        let rows = [...schedules];
 
-        rows = rows.filter((p) => {
-            if (filters.label !== "ALL" && p.label !== filters.label) return false;
-            if (filters.active !== "ALL") {
-                const want = filters.active === "TRUE";
-                if (p.active !== want) return false;
-            }
-            if (filters.rentMin !== "" && p.rent < Number(filters.rentMin)) return false;
-            if (filters.rentMax !== "" && p.rent > Number(filters.rentMax)) return false;
-            if (filters.dateFrom && p.createDate < filters.dateFrom) return false;
-            if (filters.dateTo && p.createDate > filters.dateTo) return false;
+        rows = rows.filter((r) => {
+            if (filters.scope !== "ALL" && r.scope !== filters.scope) return false;
+            if (filters.cycleMin !== "" && r.cycle < Number(filters.cycleMin)) return false;
+            if (filters.cycleMax !== "" && r.cycle > Number(filters.cycleMax)) return false;
+            if (filters.notifyMin !== "" && r.notify < Number(filters.notifyMin)) return false;
+            if (filters.notifyMax !== "" && r.notify > Number(filters.notifyMax)) return false;
+            if (filters.dateFrom && r.lastDate < filters.dateFrom) return false;
+            if (filters.dateTo && r.lastDate > filters.dateTo) return false;
             return true;
         });
 
         if (q) {
             rows = rows.filter(
-                (p) =>
-                    p.label.toLowerCase().includes(q) ||
-                    String(p.rent).includes(q) ||
-                    p.createDate.includes(q)
+                (r) =>
+                    r.scope.toLowerCase().includes(q) ||
+                    r.asset.toLowerCase().includes(q) ||
+                    String(r.cycle).includes(q) ||
+                    String(r.notify).includes(q) ||
+                    r.lastDate.includes(q) ||
+                    r.nextDate.includes(q)
             );
         }
 
         rows.sort((a, b) =>
-            sortAsc ? a.createDate.localeCompare(b.createDate) : b.createDate.localeCompare(a.createDate)
+            sortAsc ? a.lastDate.localeCompare(b.lastDate) : b.lastDate.localeCompare(a.lastDate)
         );
-
         return rows;
-    }, [packages, filters, search, sortAsc]);
+    }, [schedules, filters, search, sortAsc]);
 
     // --------- PAGINATION ----------
     const [currentPage, setCurrentPage] = useState(1);
@@ -98,63 +106,69 @@ function PackageManagement() {
     };
 
     // --------- ACTIONS ----------
-    const toggleActive = (row) => {
-        setPackages((prev) => prev.map((p) => (p.id === row.id ? { ...p, active: !p.active } : p)));
+    const deleteRow = (rowId) => {
+        setSchedules((prev) => prev.filter((r) => r.id !== rowId));
+        setSelected((prev) => prev.filter((id) => id !== rowId));
     };
 
     const deleteSelected = () => {
         if (selected.length === 0) return;
-        setPackages((prev) => prev.filter((p) => !selected.includes(p.id)));
+        setSchedules((prev) => prev.filter((r) => !selected.includes(r.id)));
         setSelected([]);
     };
 
-    // --------- CREATE PACKAGE (Modal) ----------
-    const [newPkg, setNewPkg] = useState({
-        label: "3 Month",
-        months: 3,
-        rent: 5000,
-        createDate: new Date().toISOString().slice(0, 10),
-        active: true,
-        color: "#FFC73B", // default ให้ตรงกับ HEX palette
+    // --------- CREATE SCHEDULE (Modal) ----------
+    const [newSch, setNewSch] = useState({
+        scope: "Asset",
+        asset: "",
+        cycle: 6,
+        notify: 7,
+        lastDate: new Date().toISOString().slice(0, 10),
     });
 
-    const addPackage = () => {
-        setPackages((prev) => [
+    const addSchedule = () => {
+        const nextDate = addMonthsISO(newSch.lastDate, newSch.cycle);
+        setSchedules((prev) => [
             ...prev,
-            { ...newPkg, id: prev.length ? Math.max(...prev.map((p) => p.id)) + 1 : 1 },
+            {
+                id: prev.length ? Math.max(...prev.map((p) => p.id)) + 1 : 1,
+                ...newSch,
+                cycle: Number(newSch.cycle),
+                notify: Number(newSch.notify),
+                nextDate,
+            },
         ]);
-        const modalEl = document.getElementById("createPackageModal");
+
+        // ปิด modal
+        const modalEl = document.getElementById("createScheduleModal");
         if (modalEl) {
             const modal = window.bootstrap?.Modal.getOrCreateInstance(modalEl);
             modal?.hide();
         }
-    };
-
-    const labelToPreset = {
-        "3 Month": { months: 3,  color: "#FFC73B" },
-        "6 Month": { months: 6,  color: "#EF98C4" },
-        "9 Month": { months: 9,  color: "#87C6FF" },
-        "1 Year":  { months: 12, color: "#9691F9" },
+        // reset ฟอร์มเบา ๆ
+        setNewSch((p) => ({ ...p, asset: "" }));
     };
 
     const hasAnyFilter =
-        filters.label !== "ALL" ||
-        filters.active !== "ALL" ||
-        filters.rentMin !== "" ||
-        filters.rentMax !== "" ||
+        filters.scope !== "ALL" ||
+        filters.cycleMin !== "" ||
+        filters.cycleMax !== "" ||
+        filters.notifyMin !== "" ||
+        filters.notifyMax !== "" ||
         !!filters.dateFrom ||
         !!filters.dateTo;
 
     const filterSummary = [];
-    if (filters.label !== "ALL") filterSummary.push(`Package: ${filters.label}`);
-    if (filters.active !== "ALL") filterSummary.push(`Status: ${filters.active === "TRUE" ? "Active" : "Inactive"}`);
-    if (filters.rentMin !== "") filterSummary.push(`Rent ≥ ${filters.rentMin}`);
-    if (filters.rentMax !== "") filterSummary.push(`Rent ≤ ${filters.rentMax}`);
+    if (filters.scope !== "ALL") filterSummary.push(`Scope: ${filters.scope}`);
+    if (filters.cycleMin !== "") filterSummary.push(`Cycle ≥ ${filters.cycleMin}`);
+    if (filters.cycleMax !== "") filterSummary.push(`Cycle ≤ ${filters.cycleMax}`);
+    if (filters.notifyMin !== "") filterSummary.push(`Notify ≥ ${filters.notifyMin}`);
+    if (filters.notifyMax !== "") filterSummary.push(`Notify ≤ ${filters.notifyMax}`);
     if (filters.dateFrom) filterSummary.push(`From ${filters.dateFrom}`);
     if (filters.dateTo) filterSummary.push(`To ${filters.dateTo}`);
 
     return (
-        <Layout title="Package Management" icon="bi bi-sticky" notifications={0}>
+        <Layout title="Maintenance Schedule" icon="bi bi-alarm" notifications={0}>
             <div className="container-fluid">
                 <div className="row min-vh-100">
                     <div className="col-lg-11 p-4">
@@ -166,7 +180,7 @@ function PackageManagement() {
                                         <button
                                             className="btn btn-link tm-link p-0"
                                             data-bs-toggle="offcanvas"
-                                            data-bs-target="#packageFilterCanvas"
+                                            data-bs-target="#scheduleFilterCanvas"
                                         >
                                             <i className="bi bi-filter me-1"></i> Filter
                                             {hasAnyFilter && <span className="badge bg-primary ms-2">●</span>}
@@ -184,11 +198,10 @@ function PackageManagement() {
                       <span className="input-group-text bg-white border-end-0">
                         <i className="bi bi-search"></i>
                       </span>
-
                                             <input
                                                 type="text"
                                                 className="form-control border-start-0"
-                                                placeholder="Search package"
+                                                placeholder="Search schedule"
                                                 value={search}
                                                 onChange={(e) => setSearch(e.target.value)}
                                             />
@@ -207,9 +220,9 @@ function PackageManagement() {
                                             type="button"
                                             className="btn btn-primary"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#createPackageModal"
+                                            data-bs-target="#createScheduleModal"
                                         >
-                                            <i className="bi bi-plus-lg me-1"></i> Create Package
+                                            <i className="bi bi-plus-lg me-1"></i> Create Schedule
                                         </button>
                                     </div>
                                 </div>
@@ -239,9 +252,12 @@ function PackageManagement() {
                                             aria-label="Select all"
                                         />
                                     </th>
-                                    <th className="text-start align-middle header-color">Package</th>
-                                    <th className="text-start align-middle header-color">Rent</th>
-                                    <th className="text-start align-middle header-color">Create date</th>
+                                    <th className="text-start align-middle header-color">Scope</th>
+                                    <th className="text-start align-middle header-color">Asset</th>
+                                    <th className="text-start align-middle header-color">Cycle</th>
+                                    <th className="text-start align-middle header-color">Notify</th>
+                                    <th className="text-start align-middle header-color">Last date</th>
+                                    <th className="text-start align-middle header-color">Next date</th>
                                     <th className="text-center align-middle header-color">Action</th>
                                 </tr>
                                 </thead>
@@ -258,39 +274,28 @@ function PackageManagement() {
                                                 />
                                             </td>
 
-                                            <td className="align-middle">
-                                                <span className="badge rounded-pill px-3 py-2"
-                                                      style={{ backgroundColor: item.color }}
-                                                >
-                                                    <i className="bi bi-circle-fill me-2"></i>
-                                                    {item.label}
-                                                </span>
-                                            </td>
-
-                                            <td className="align-middle">
-                                                {item.rent.toLocaleString()}
-                                            </td>
-
-                                            <td className="align-middle">{item.createDate}</td>
+                                            <td className="align-middle">{item.scope}</td>
+                                            <td className="align-middle">{item.asset}</td>
+                                            <td className="align-middle">{item.cycle}</td>
+                                            <td className="align-middle">{item.notify}</td>
+                                            <td className="align-middle">{item.lastDate}</td>
+                                            <td className="align-middle">{item.nextDate}</td>
 
                                             <td className="align-middle text-center">
-                                                <div className="form-check form-switch d-inline-flex">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="checkbox"
-                                                        role="switch"
-                                                        checked={item.active}
-                                                        onChange={() => toggleActive(item)}
-                                                        aria-label={`Toggle ${item.label}`}
-                                                    />
-                                                </div>
+                                                <button
+                                                    className="btn btn-link text-danger p-0"
+                                                    onClick={() => deleteRow(item.id)}
+                                                    title="Delete"
+                                                >
+                                                    <i className="bi bi-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="5" className="text-center">
-                                            No packages found
+                                        <td colSpan="8" className="text-center">
+                                            No schedules found
                                         </td>
                                     </tr>
                                 )}
@@ -309,74 +314,75 @@ function PackageManagement() {
                 </div>
             </div>
 
-            {/* Create Package Modal */}
-            <Modal id="createPackageModal" title="Create Package" icon="bi bi-sticky" size="modal-lg">
+            {/* Create Schedule Modal */}
+            <Modal id="createScheduleModal" title="Create Schedule" icon="bi bi-calendar-week" size="modal-lg">
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
-                        addPackage(); // บันทึกข้อมูลและปิด modal
+                        addSchedule(); // บันทึกและปิด modal
                     }}
                 >
                     <div className="row g-3">
                         <div className="col-md-6">
-                            <label className="form-label">Label</label>
+                            <label className="form-label">Scope</label>
                             <select
                                 className="form-select"
-                                value={newPkg.label}
-                                onChange={(e) => {
-                                    const v = e.target.value;
-                                    const preset = labelToPreset[v];
-                                    setNewPkg((p) => ({
-                                        ...p,
-                                        label: v,
-                                        months: preset.months,
-                                        color: preset.color,
-                                    }));
-                                }}
+                                value={newSch.scope}
+                                onChange={(e) => setNewSch((p) => ({ ...p, scope: e.target.value }))}
                                 required
                             >
-                                <option>3 Month</option>
-                                <option>6 Month</option>
-                                <option>9 Month</option>
-                                <option>1 Year</option>
+                                <option>Asset</option>
+                                <option>Building</option>
                             </select>
                         </div>
 
                         <div className="col-md-6">
-                            <label className="form-label">Rent</label>
+                            <label className="form-label">Asset</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="e.g. Air conditioner"
+                                value={newSch.asset}
+                                onChange={(e) => setNewSch((p) => ({ ...p, asset: e.target.value }))}
+                                required
+                            />
+                        </div>
+
+                        <div className="col-md-4">
+                            <label className="form-label">Cycle (months)</label>
                             <input
                                 type="number"
                                 className="form-control"
-                                value={newPkg.rent}
-                                onChange={(e) => setNewPkg((p) => ({ ...p, rent: Number(e.target.value) }))}
+                                value={newSch.cycle}
+                                min={1}
+                                onChange={(e) => setNewSch((p) => ({ ...p, cycle: Number(e.target.value) }))}
                                 required
                             />
                         </div>
 
-                        <div className="col-md-6">
-                            <label className="form-label">Create date</label>
+                        <div className="col-md-4">
+                            <label className="form-label">Notify (days)</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                value={newSch.notify}
+                                min={0}
+                                onChange={(e) => setNewSch((p) => ({ ...p, notify: Number(e.target.value) }))}
+                                required
+                            />
+                        </div>
+
+                        <div className="col-md-4">
+                            <label className="form-label">Last date</label>
                             <input
                                 type="date"
                                 className="form-control"
-                                value={newPkg.createDate}
-                                onChange={(e) => setNewPkg((p) => ({ ...p, createDate: e.target.value }))}
+                                value={newSch.lastDate}
+                                onChange={(e) => setNewSch((p) => ({ ...p, lastDate: e.target.value }))}
                                 required
                             />
-                        </div>
-
-                        <div className="col-md-6 d-flex align-items-end">
-                            <div className="form-check form-switch">
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    role="switch"
-                                    checked={newPkg.active}
-                                    onChange={(e) => setNewPkg((p) => ({ ...p, active: e.target.checked }))}
-                                    id="newPkgActive"
-                                />
-                                <label className="form-check-label ms-2" htmlFor="newPkgActive">
-                                    Active
-                                </label>
+                            <div className="form-text">
+                                Next date จะคำนวณอัตโนมัติจาก Last date + Cycle
                             </div>
                         </div>
 
@@ -396,16 +402,15 @@ function PackageManagement() {
                 </form>
             </Modal>
 
-
             {/* Filters Offcanvas */}
             <div
                 className="offcanvas offcanvas-end"
                 tabIndex="-1"
-                id="packageFilterCanvas"
-                aria-labelledby="packageFilterCanvasLabel"
+                id="scheduleFilterCanvas"
+                aria-labelledby="scheduleFilterCanvasLabel"
             >
                 <div className="offcanvas-header">
-                    <h5 id="packageFilterCanvasLabel" className="mb-0">
+                    <h5 id="scheduleFilterCanvasLabel" className="mb-0">
                         <i className="bi bi-filter me-2"></i>Filters
                     </h5>
                     <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -414,56 +419,62 @@ function PackageManagement() {
                 <div className="offcanvas-body">
                     <div className="row g-3">
                         <div className="col-12">
-                            <label className="form-label">Package</label>
+                            <label className="form-label">Scope</label>
                             <select
                                 className="form-select"
-                                value={filters.label}
-                                onChange={(e) => setFilters((f) => ({ ...f, label: e.target.value }))}
+                                value={filters.scope}
+                                onChange={(e) => setFilters((f) => ({ ...f, scope: e.target.value }))}
                             >
                                 <option value="ALL">All</option>
-                                <option value="3 Month">3 Month</option>
-                                <option value="6 Month">6 Month</option>
-                                <option value="9 Month">9 Month</option>
-                                <option value="1 Year">1 Year</option>
-                            </select>
-                        </div>
-
-                        <div className="col-12">
-                            <label className="form-label">Status</label>
-                            <select
-                                className="form-select"
-                                value={filters.active}
-                                onChange={(e) => setFilters((f) => ({ ...f, active: e.target.value }))}
-                            >
-                                <option value="ALL">All</option>
-                                <option value="TRUE">Active</option>
-                                <option value="FALSE">Inactive</option>
+                                <option value="Asset">Asset</option>
+                                <option value="Building">Building</option>
                             </select>
                         </div>
 
                         <div className="col-md-6">
-                            <label className="form-label">Rent min</label>
+                            <label className="form-label">Cycle min</label>
                             <input
                                 type="number"
                                 className="form-control"
-                                value={filters.rentMin}
-                                onChange={(e) => setFilters((f) => ({ ...f, rentMin: e.target.value }))}
-                                placeholder="e.g. 4500"
+                                value={filters.cycleMin}
+                                onChange={(e) => setFilters((f) => ({ ...f, cycleMin: e.target.value }))}
+                                placeholder="e.g. 3"
                             />
                         </div>
                         <div className="col-md-6">
-                            <label className="form-label">Rent max</label>
+                            <label className="form-label">Cycle max</label>
                             <input
                                 type="number"
                                 className="form-control"
-                                value={filters.rentMax}
-                                onChange={(e) => setFilters((f) => ({ ...f, rentMax: e.target.value }))}
-                                placeholder="e.g. 6000"
+                                value={filters.cycleMax}
+                                onChange={(e) => setFilters((f) => ({ ...f, cycleMax: e.target.value }))}
+                                placeholder="e.g. 12"
                             />
                         </div>
 
                         <div className="col-md-6">
-                            <label className="form-label">Create date from</label>
+                            <label className="form-label">Notify min</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                value={filters.notifyMin}
+                                onChange={(e) => setFilters((f) => ({ ...f, notifyMin: e.target.value }))}
+                                placeholder="e.g. 3"
+                            />
+                        </div>
+                        <div className="col-md-6">
+                            <label className="form-label">Notify max</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                value={filters.notifyMax}
+                                onChange={(e) => setFilters((f) => ({ ...f, notifyMax: e.target.value }))}
+                                placeholder="e.g. 14"
+                            />
+                        </div>
+
+                        <div className="col-md-6">
+                            <label className="form-label">Last date from</label>
                             <input
                                 type="date"
                                 className="form-control"
@@ -472,7 +483,7 @@ function PackageManagement() {
                             />
                         </div>
                         <div className="col-md-6">
-                            <label className="form-label">Create date to</label>
+                            <label className="form-label">Last date to</label>
                             <input
                                 type="date"
                                 className="form-control"
@@ -496,4 +507,4 @@ function PackageManagement() {
     );
 }
 
-export default PackageManagement;
+export default MaintenanceSchedule;

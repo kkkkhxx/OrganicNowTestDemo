@@ -12,17 +12,19 @@ import RoomDetail from "./pages/roomdetail";
 import Invoicemanagement from "./pages/Invoicemanagement";
 import InvoiceDetails from "./pages/Invoicedetails";
 import PackageManagement from "./pages/PackageManagement";
+import MaintenanceSchedule from "./pages/MaintenanceSchedule";
 
 const router = createBrowserRouter([
-  { path: "/", element: <Dashboard /> },
-  { path: "/test", element: <Test /> },
-  { path: "/test2", element: <Test2 /> },
-  { path: "/TenantManagement", element: <TenantManagement /> },
-  { path: "/TenantDetail", element: <TenantDetail /> },
-  { path: "/RoomDetail", element: <RoomDetail /> },
-  { path: "/Invoicemanagement", element: <Invoicemanagement/>},
-  { path: "/InvoiceDetails", element: <InvoiceDetails/>},
+    { path: "/", element: <Dashboard /> },
+    { path: "/test", element: <Test /> },
+    { path: "/test2", element: <Test2 /> },
+    { path: "/TenantManagement", element: <TenantManagement /> },
+    { path: "/TenantDetail", element: <TenantDetail /> },
+    { path: "/RoomDetail", element: <RoomDetail /> },
+    { path: "/Invoicemanagement", element: <Invoicemanagement/>},
+    { path: "/InvoiceDetails", element: <InvoiceDetails/>},
     { path: "/PackageManagement", element: <PackageManagement/>},
+    { path: "/MaintenanceSchedule", element: <MaintenanceSchedule/>},
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
