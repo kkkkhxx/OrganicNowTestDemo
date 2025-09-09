@@ -396,7 +396,6 @@ function PackageManagement() {
                 </form>
             </Modal>
 
-
             {/* Filters Offcanvas */}
             <div
                 className="offcanvas offcanvas-end"
