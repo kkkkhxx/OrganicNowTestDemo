@@ -1,17 +1,18 @@
 package com.organicnow.backend.service;
 
 import com.organicnow.backend.dto.PackagePlanDto;
+import com.organicnow.backend.dto.PackagePlanRequestDto;
 import com.organicnow.backend.model.ContractType;
 import com.organicnow.backend.model.PackagePlan;
 import com.organicnow.backend.repository.ContractTypeRepository;
 import com.organicnow.backend.repository.PackagePlanRepository;
-import com.organicnow.backend.dto.PackagePlanRequestDto;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 public class PackagePlanService {
@@ -19,18 +20,23 @@ public class PackagePlanService {
     private final PackagePlanRepository packagePlanRepository;
     private final ContractTypeRepository contractTypeRepository;
 
-    public PackagePlanService(PackagePlanRepository packagePlanRepository, ContractTypeRepository contractTypeRepository) {
+    public PackagePlanService(PackagePlanRepository packagePlanRepository,
+                              ContractTypeRepository contractTypeRepository) {
         this.packagePlanRepository = packagePlanRepository;
         this.contractTypeRepository = contractTypeRepository;
     }
 
-    public Map<String, Object> createPackage(PackagePlanRequestDto dto) {
+    public void createPackage(PackagePlanRequestDto dto) {
         // หา ContractType จาก id ที่ส่งมา
-        ContractType contractType = contractTypeRepository.findById(dto.getContract_type_id())
-                .orElseThrow(() -> new RuntimeException("ContractType not found"));
+        ContractType contractType = contractTypeRepository.findById(dto.getContractTypeId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        NOT_FOUND, "ContractType not found with id " + dto.getContractTypeId()
+                ));
 
         // ปิดการใช้งาน PackagePlan เดิมที่ contractType.name ซ้ำ
-        List<PackagePlan> existingPackages = packagePlanRepository.findByContractType_NameAndIsActive(contractType.getName(), 1);
+        List<PackagePlan> existingPackages =
+                packagePlanRepository.findByContractType_NameAndIsActive(contractType.getName(), 1);
+
         for (PackagePlan oldPlan : existingPackages) {
             oldPlan.setIsActive(0);
             packagePlanRepository.save(oldPlan);
@@ -44,15 +50,10 @@ public class PackagePlanService {
                 .build();
 
         packagePlanRepository.save(packagePlan);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Package saved successfully");
-        return response;
     }
 
-
-    public Map<String, Object> getAllPackages() {
-        List<PackagePlanDto> dtos = packagePlanRepository.findAll()
+    public List<PackagePlanDto> getAllPackages() {
+        return packagePlanRepository.findAll()
                 .stream()
                 .map(p -> new PackagePlanDto(
                         p.getId(),
@@ -62,9 +63,5 @@ public class PackagePlanService {
                         p.getContractType().getDuration()
                 ))
                 .collect(Collectors.toList());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("result", dtos);
-        return response;
     }
 }

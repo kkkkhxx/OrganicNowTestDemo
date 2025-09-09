@@ -1,12 +1,17 @@
 package com.organicnow.backend.dto;
 
-import java.math.BigDecimal;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 @Data
 public class PackagePlanRequestDto {
     private BigDecimal price;
+
+    @JsonProperty("is_active")
     private Integer isActive;
-    private Long contract_type_id;  // 👈 รับเป็น id ตรง ๆ
+
+    @JsonProperty("contract_type_id")
+    private Long contractTypeId;  // 👈 ใช้ camelCase ใน Java
 }
