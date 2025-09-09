@@ -10,26 +10,24 @@ import TenantDetail from "./pages/tenantdetail";
 import RoomDetail from "./pages/roomdetail";
 import Invoicemanagement from "./pages/Invoicemanagement";
 import InvoiceDetails from "./pages/Invoicedetails";
-
-// ของ branch package-table
 import PackageManagement from "./pages/PackageManagement";
 import MaintenanceSchedule from "./pages/MaintenanceSchedule";
-
-// ของ branch main
 import RoomManagement from "./pages/roommanagement";
+import MaintenanceRequest from "./pages/maintenancerequest";
 
 const router = createBrowserRouter([
-    { path: "/", element: <Dashboard /> },
-    { path: "/test", element: <Test /> },
-    { path: "/test2", element: <Test2 /> },
-    { path: "/TenantManagement", element: <TenantManagement /> },
-    { path: "/TenantDetail", element: <TenantDetail /> },
-    { path: "/RoomDetail", element: <RoomDetail /> },
-    { path: "/Invoicemanagement", element: <Invoicemanagement /> },
-    { path: "/InvoiceDetails", element: <InvoiceDetails /> },
-    { path: "/PackageManagement", element: <PackageManagement /> },
-    { path: "/MaintenanceSchedule", element: <MaintenanceSchedule /> },
-    { path: "/Roommanagement", element: <RoomManagement /> },
+  { path: "/", element: <Dashboard /> },
+  { path: "/test", element: <Test /> },
+  { path: "/test2", element: <Test2 /> },
+  { path: "/TenantManagement", element: <TenantManagement /> },
+  { path: "/TenantDetail", element: <TenantDetail /> },
+  { path: "/RoomDetail", element: <RoomDetail /> },
+  { path: "/Invoicemanagement", element: <Invoicemanagement /> },
+  { path: "/InvoiceDetails", element: <InvoiceDetails /> },
+  { path: "/PackageManagement", element: <PackageManagement /> },
+  { path: "/MaintenanceSchedule", element: <MaintenanceSchedule /> },
+  { path: "/Roommanagement", element: <RoomManagement /> },
+  { path: "/Maintenancerequest", element: <MaintenanceRequest /> },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
