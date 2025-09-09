@@ -3,6 +3,7 @@ package com.organicnow.backend.controller;
 import com.organicnow.backend.dto.CreateTenantContractRequest;
 import com.organicnow.backend.dto.TenantDto;
 import com.organicnow.backend.dto.UpdateTenantContractRequest;
+import com.organicnow.backend.service.TenantService;
 import com.organicnow.backend.service.TenantContractService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
