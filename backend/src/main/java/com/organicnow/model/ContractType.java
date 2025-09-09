@@ -4,22 +4,25 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name = "contact_type")
+@Table(name = "contract_type")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class ContractType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "contact_type_id")
-    private Long id;   // Contact_type_id
+    @Column(name = "contract_type_id")
+    private Long id;
 
     @NotBlank
-    @Column(name = "contact_name", nullable = false, length = 100)
-    private String name;   // Contact_name
+    @JsonProperty("contract_name")
+    @Column(name = "contract_name", nullable = false, length = 100)
+    private String name;
 
     @Min(1)
     @Column(name = "duration")
     private Integer duration;   // Duration (months)
 }
+ 
