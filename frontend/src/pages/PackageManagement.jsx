@@ -281,14 +281,15 @@ function PackageManagement() {
                             <table className="table text-nowrap">
                                 <thead>
                                 <tr>
-                                    <th className="text-center header-color checkbox-cell">
-                                        <input
-                                            type="checkbox"
-                                            checked={isAllSelected}
-                                            onChange={toggleSelectAll}
-                                            aria-label="Select all"
-                                        />
-                                    </th>
+                                    {/*<th className="text-center header-color checkbox-cell">*/}
+                                    {/*    <input*/}
+                                    {/*        type="checkbox"*/}
+                                    {/*        checked={isAllSelected}*/}
+                                    {/*        onChange={toggleSelectAll}*/}
+                                    {/*        aria-label="Select all"*/}
+                                    {/*    />*/}
+                                    {/*</th>*/}
+                                    <th className="text-start align-middle header-color">Order</th>
                                     <th className="text-start align-middle header-color">Package</th>
                                     <th className="text-start align-middle header-color">Rent</th>
                                     <th className="text-start align-middle header-color">Create date</th>
@@ -297,25 +298,23 @@ function PackageManagement() {
                                 </thead>
                                 <tbody>
                                 {pageRows.length ? (
-                                    pageRows.map((item) => (
+                                    pageRows.map((item, idx) => (
                                         <tr key={item.id}>
-                                            <td className="align-middle text-center checkbox-cell">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selected.includes(item.id)}
-                                                    onChange={() => toggleSelectRow(item.id)}
-                                                    aria-label={`Select row ${item.id}`}
-                                                />
-                                            </td>
-
+                                            {/*<td className="align-middle text-center checkbox-cell">*/}
+                                            {/*    <input*/}
+                                            {/*        type="checkbox"*/}
+                                            {/*        checked={selected.includes(item.id)}*/}
+                                            {/*        onChange={() => toggleSelectRow(item.id)}*/}
+                                            {/*        aria-label={`Select row ${item.id}`}*/}
+                                            {/*    />*/}
+                                            {/*</td>*/}
                                             <td className="align-middle">
-                          <span
-                              className="badge rounded-pill px-3 py-2"
-                              style={{ backgroundColor: withColor(item).color }}
-                          >
-                            <i className="bi bi-circle-fill me-2"></i>
-                              {item.label}
-                          </span>
+                                                {(currentPage - 1) * pageSize + idx + 1}
+                                            </td>
+                                            <td className="align-middle"><span className="badge rounded-pill px-3 py-2" style={{ backgroundColor: withColor(item).color }}>
+                                                <i className="bi bi-circle-fill me-2"></i>
+                                                {item.label}
+                                            </span>
                                             </td>
 
                                             <td className="align-middle">

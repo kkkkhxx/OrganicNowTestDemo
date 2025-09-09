@@ -287,13 +287,6 @@ function MaintenanceSchedule() {
 
                                     <div className="d-flex align-items-center gap-2">
                                         <button
-                                            className="btn btn-outline-light text-danger border-0"
-                                            onClick={deleteSelected}
-                                            title="Bulk delete"
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
-                                        <button
                                             type="button"
                                             className="btn btn-primary"
                                             data-bs-toggle="modal"
@@ -308,8 +301,8 @@ function MaintenanceSchedule() {
                                     <div className="pt-2 d-flex flex-wrap gap-2">
                                         {filterSummary.map((txt, idx) => (
                                             <span key={idx} className="badge bg-light text-dark border">
-                        {txt}
-                      </span>
+                                                {txt}
+                                            </span>
                                         ))}
                                     </div>
                                 </div>
@@ -321,14 +314,15 @@ function MaintenanceSchedule() {
                             <table className="table text-nowrap">
                                 <thead>
                                 <tr>
-                                    <th className="text-center header-color checkbox-cell">
+                                    {/*<th className="text-center header-color checkbox-cell">
                                         <input
                                             type="checkbox"
                                             checked={isAllSelected}
                                             onChange={toggleSelectAll}
                                             aria-label="Select all"
                                         />
-                                    </th>
+                                    </th>*/}
+                                    <th className="text-start align-middle header-color">Order</th>
                                     <th className="text-start align-middle header-color">Scope</th>
                                     <th className="text-start align-middle header-color">Target</th>
                                     <th className="text-start align-middle header-color">Cycle</th>
@@ -340,17 +334,19 @@ function MaintenanceSchedule() {
                                 </thead>
                                 <tbody>
                                 {pageRows.length ? (
-                                    pageRows.map((item) => (
+                                    pageRows.map((item, idx) => (
                                         <tr key={item.id}>
-                                            <td className="align-middle text-center checkbox-cell">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selected.includes(item.id)}
-                                                    onChange={() => toggleSelectRow(item.id)}
-                                                    aria-label={`Select row ${item.id}`}
-                                                />
+                                            {/*<td className="align-middle text-center checkbox-cell">*/}
+                                            {/*    <input*/}
+                                            {/*        type="checkbox"*/}
+                                            {/*        checked={selected.includes(item.id)}*/}
+                                            {/*        onChange={() => toggleSelectRow(item.id)}*/}
+                                            {/*        aria-label={`Select row ${item.id}`}*/}
+                                            {/*    />*/}
+                                            {/*</td>*/}
+                                            <td className="align-middle">
+                                                {(currentPage - 1) * pageSize + idx + 1}
                                             </td>
-
                                             <td className="align-middle">{item.scope}</td>
                                             <td className="align-middle">{item.asset}</td>
                                             <td className="align-middle">{item.cycle}</td>
