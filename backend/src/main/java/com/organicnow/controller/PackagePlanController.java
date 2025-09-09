@@ -3,6 +3,7 @@ package com.organicnow.backend.controller;
 import com.organicnow.backend.model.PackagePlan;
 import com.organicnow.backend.service.PackagePlanService;
 import org.springframework.web.bind.annotation.*;
+import com.organicnow.backend.dto.PackagePlanRequestDto;
 
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class PackagePlanController {
     }
 
     @PostMapping
-    public Map<String, Object> createPackage(@RequestBody PackagePlan packagePlan) {
-        return packagePlanService.createPackage(packagePlan);
+    public Map<String, Object> createPackage(@RequestBody PackagePlanRequestDto dto) {
+        return packagePlanService.createPackage(dto);
     }
 }

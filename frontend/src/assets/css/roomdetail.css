@@ -1,7 +1,7 @@
 /* .table-wrapper ปรับความกว้างและการเลื่อน */
 .table-wrapper {
   width: calc(100% + 80px);   /* ใช้ 100% เพื่อไม่ให้ตารางเกินขอบ */
-  margin-right: -32px;       
+  margin-right: -32px;
   overflow-x: auto; /* เปลี่ยนเป็น auto เพื่อให้สามารถเลื่อนได้ */
   border-radius: 10px;
   margin: 20px;

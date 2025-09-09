@@ -5,6 +5,7 @@ import com.organicnow.backend.model.ContractType;
 import com.organicnow.backend.model.PackagePlan;
 import com.organicnow.backend.repository.ContractTypeRepository;
 import com.organicnow.backend.repository.PackagePlanRepository;
+import com.organicnow.backend.dto.PackagePlanRequestDto;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -23,12 +24,12 @@ public class PackagePlanService {
         this.contractTypeRepository = contractTypeRepository;
     }
 
-    public Map<String, Object> createPackage(PackagePlan packagePlan) {
-        // หา ContractType ที่มีอยู่แล้ว
-        ContractType contractType = contractTypeRepository.findById(packagePlan.getContractType().getId())
+    public Map<String, Object> createPackage(PackagePlanRequestDto dto) {
+        // หา ContractType จาก id ที่ส่งมา
+        ContractType contractType = contractTypeRepository.findById(dto.getContract_type_id())
                 .orElseThrow(() -> new RuntimeException("ContractType not found"));
 
-        // ปิดการใช้งาน PackagePlan เดิมที่มี contractType.name ซ้ำ
+        // ปิดการใช้งาน PackagePlan เดิมที่ contractType.name ซ้ำ
         List<PackagePlan> existingPackages = packagePlanRepository.findByContractType_NameAndIsActive(contractType.getName(), 1);
         for (PackagePlan oldPlan : existingPackages) {
             oldPlan.setIsActive(0);
@@ -36,23 +37,19 @@ public class PackagePlanService {
         }
 
         // สร้าง PackagePlan ใหม่
-        packagePlan.setIsActive(1);
-        PackagePlan saved = packagePlanRepository.save(packagePlan);
+        PackagePlan packagePlan = PackagePlan.builder()
+                .price(dto.getPrice())
+                .isActive(dto.getIsActive())
+                .contractType(contractType)
+                .build();
 
-        // map Entity → DTO
-        PackagePlanDto dto = new PackagePlanDto(
-                saved.getId(),
-                saved.getPrice(),
-                saved.getIsActive(),
-                saved.getContractType().getName(),
-                saved.getContractType().getDuration()
-        );
+        packagePlanRepository.save(packagePlan);
 
-        // คืนค่า { result: {} }
         Map<String, Object> response = new HashMap<>();
-        response.put("result", dto);
+        response.put("message", "Package saved successfully");
         return response;
     }
+
 
     public Map<String, Object> getAllPackages() {
         List<PackagePlanDto> dtos = packagePlanRepository.findAll()
