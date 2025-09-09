@@ -30,7 +30,7 @@ function RoomManagement() {
     setCurrentPage(1);
   };
 
-  // ข้อมูลเริ่มต้นไม่มี rid มีเฉพาะ room/floor/status/request
+
   const [data, setData] = useState([
     { room: "101", floor: "1", status: "Unavailable", request: 1 },
     { room: "102", floor: "1", status: "Unavailable", request: 0 },
@@ -107,12 +107,11 @@ function RoomManagement() {
     e.preventDefault();
     if (!isFormValid) return;
 
-    // สร้างแถวใหม่ (ไม่จำเป็นต้องแสดง rid ในตาราง)
     const nextNum = data.length + 1;
     const newRid = `R${String(nextNum).padStart(2, "0")}`;
 
     const newRow = {
-      rid: newRid, // เก็บไว้เผื่อใช้ภายหลัง แต่ไม่ได้แสดงในตารางนี้
+      rid: newRid, 
       floor: form.floor,
       room: form.room,
       status: "Available",
@@ -141,7 +140,7 @@ function RoomManagement() {
 
   const handleDelete = (item) => console.log("Delete: ", item);
 
-  // เอา rid ออกเพื่อหลีกเลี่ยง undefined ในรายการเริ่มต้น
+
   const handleViewRoom = (item) => {
     navigate("/roomdetail", {
       state: {
@@ -217,7 +216,6 @@ function RoomManagement() {
             {/* Table */}
             <div className="table-wrapper">
               <table className="table text-nowrap align-middle tm-left">
-                {/* หัวตารางสีน้ำเงิน */}
                 <thead className="header-color">
                   <tr>
                     <th className="checkbox-cell">
@@ -236,7 +234,6 @@ function RoomManagement() {
                   </tr>
                 </thead>
 
-                {/* เนื้อหาตาราง ให้ลำดับและฟิลด์ตรงกับหัวตาราง */}
                 <tbody>
                   {data.length > 0 ? (
                     data.map((item, idx) => {
@@ -398,21 +395,24 @@ function RoomManagement() {
                   </div>
                 </div>
 
-                <div className="d-flex justify-content-center gap-3 mt-5">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => {
-                      resetForm();
-                      closeModal();
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn btn-primary" disabled={!isFormValid}>
-                    Save
-                  </button>
-                </div>
+               <div className="d-flex justify-content-center gap-3 mt-5">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      data-bs-dismiss="modal"   
+                      onClick={resetForm}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={!isFormValid}
+                      data-bs-dismiss="modal"    
+                    >
+                      Save
+                    </button>
+                  </div>
               </form>
             </Modal>
           </div>
