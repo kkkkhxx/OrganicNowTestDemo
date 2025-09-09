@@ -10,12 +10,8 @@ import TenantDetail from "./pages/tenantdetail";
 import RoomDetail from "./pages/roomdetail";
 import Invoicemanagement from "./pages/Invoicemanagement";
 import InvoiceDetails from "./pages/Invoicedetails";
-
-
 import PackageManagement from "./pages/PackageManagement";
 import MaintenanceSchedule from "./pages/MaintenanceSchedule";
-
-
 import RoomManagement from "./pages/roommanagement";
 import MaintenanceRequest from "./pages/maintenancerequest";
 
