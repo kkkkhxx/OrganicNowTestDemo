@@ -25,4 +25,3 @@ public class ContractType {
     @Column(name = "duration")
     private Integer duration;   // Duration (months)
 }
- 
