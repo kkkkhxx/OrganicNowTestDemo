@@ -3,12 +3,57 @@ import Layout from "../component/layout";
 import Modal from "../component/modal";
 import Pagination from "../component/pagination";
 import { pageSize as defaultPageSize } from "../config_variable";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import * as bootstrap from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
+/* ===================== สีแบบวิธี B ===================== */
+// พาเลตตามจำนวนเดือน (ถ้า match ใช้อันนี้ก่อน)
+const COLOR_BY_MONTHS = {
+    3:  "#FFC73B",
+    6:  "#EF98C4",
+    9:  "#87C6FF",
+    12: "#9691F9",
+};
+
+// แปลง string -> สี HSL คงที่ (สำหรับ fallback)
+function hashToColor(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+        h = (h << 5) - h + str.charCodeAt(i);
+        h |= 0;
+    }
+    const hue = Math.abs(h) % 360;
+    return `hsl(${hue}, 70%, 70%)`;
+}
+
+// รับประกันว่ามี color เสมอ (ถ้ามีมาแล้วก็ใช้, ไม่มีก็ derive)
+function withColor(pkg) {
+    if (pkg.color) return pkg;
+    const key = String(pkg.label || pkg.id || "");
+    const derived = COLOR_BY_MONTHS[pkg.months] || hashToColor(key);
+    return { ...pkg, color: derived };
+}
+
+/* ===================== ปิดโมดัลแบบชัวร์ ๆ ===================== */
+const closeModalSafely = (id) => {
+    const el = document.getElementById(id);
+    const inst = el ? (bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el)) : null;
+    if (inst) {
+        inst.hide();
+        inst.dispose();
+    } else {
+        const opened = document.querySelector(".modal.show");
+        if (opened) bootstrap.Modal.getInstance(opened)?.hide();
+    }
+    document.querySelectorAll(".modal-backdrop").forEach((d) => d.remove());
+    document.body.classList.remove("modal-open");
+    document.body.style.removeProperty("overflow");
+    document.body.style.removeProperty("paddingRight");
+};
+
 function PackageManagement() {
-    // --------- DATA ----------
+    /* --------- DATA (mock เริ่มต้น) ---------- */
     const [packages, setPackages] = useState([
         { id: 1, label: "3 Month", months: 3, rent: 5500, createDate: "2024-12-31", active: true,  color: "#FFC73B" },
         { id: 2, label: "6 Month", months: 6, rent: 5000, createDate: "2025-01-30", active: true,  color: "#EF98C4" },
@@ -20,7 +65,12 @@ function PackageManagement() {
         { id: 8, label: "1 Year",  months: 12, rent: 4500, createDate: "2025-01-30", active: true,  color: "#9691F9" },
     ]);
 
-    // --------- TABLE CONTROLS ----------
+    // รับประกันว่ามีสีเสมอ (กรณีดึงจากฐานข้อมูลจริงแล้วไม่ได้ส่ง color มา)
+    useEffect(() => {
+        setPackages((prev) => prev.map(withColor));
+    }, []);
+
+    /* --------- TABLE CONTROLS ---------- */
     const [search, setSearch] = useState("");
     const [sortAsc, setSortAsc] = useState(true);
 
@@ -32,6 +82,7 @@ function PackageManagement() {
         dateFrom: "",
         dateTo: "",
     });
+
     const clearFilters = () =>
         setFilters({ label: "ALL", active: "ALL", rentMin: "", rentMax: "", dateFrom: "", dateTo: "" });
 
@@ -68,7 +119,7 @@ function PackageManagement() {
         return rows;
     }, [packages, filters, search, sortAsc]);
 
-    // --------- PAGINATION ----------
+    /* --------- PAGINATION ---------- */
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(defaultPageSize || 10);
     const totalRecords = filtered.length;
@@ -83,7 +134,7 @@ function PackageManagement() {
         return filtered.slice(start, start + pageSize);
     }, [filtered, currentPage, pageSize]);
 
-    // --------- SELECTION ----------
+    /* --------- SELECTION ---------- */
     const [selected, setSelected] = useState([]);
     const isAllSelected = pageRows.length > 0 && selected.length === pageRows.length;
 
@@ -97,7 +148,7 @@ function PackageManagement() {
         else setSelected(pageRows.map((r) => r.id));
     };
 
-    // --------- ACTIONS ----------
+    /* --------- ACTIONS ---------- */
     const toggleActive = (row) => {
         setPackages((prev) => prev.map((p) => (p.id === row.id ? { ...p, active: !p.active } : p)));
     };
@@ -108,33 +159,39 @@ function PackageManagement() {
         setSelected([]);
     };
 
-    // --------- CREATE PACKAGE (Modal) ----------
+    /* --------- CREATE PACKAGE (Modal) ---------- */
     const [newPkg, setNewPkg] = useState({
         label: "3 Month",
         months: 3,
         rent: 5000,
         createDate: new Date().toISOString().slice(0, 10),
         active: true,
-        color: "#FFC73B", // default ให้ตรงกับ HEX palette
+        // ไม่ต้องกำหนด color ที่นี่ ปล่อยให้ withColor ตัดสินใจจาก months/label
     });
 
-    const addPackage = () => {
-        setPackages((prev) => [
-            ...prev,
-            { ...newPkg, id: prev.length ? Math.max(...prev.map((p) => p.id)) + 1 : 1 },
-        ]);
-        const modalEl = document.getElementById("createPackageModal");
-        if (modalEl) {
-            const modal = window.bootstrap?.Modal.getOrCreateInstance(modalEl);
-            modal?.hide();
-        }
+    // map เปลี่ยน label -> months (และสีจะ derive ด้วย withColor ตอนบันทึก)
+    const labelToPreset = {
+        "3 Month": { months: 3 },
+        "6 Month": { months: 6 },
+        "9 Month": { months: 9 },
+        "1 Year":  { months: 12 },
     };
 
-    const labelToPreset = {
-        "3 Month": { months: 3,  color: "#FFC73B" },
-        "6 Month": { months: 6,  color: "#EF98C4" },
-        "9 Month": { months: 9,  color: "#87C6FF" },
-        "1 Year":  { months: 12, color: "#9691F9" },
+    const addPackage = () => {
+        const nextId = packages.length ? Math.max(...packages.map((p) => p.id)) + 1 : 1;
+        const prepared = withColor({ ...newPkg, id: nextId });
+        setPackages((prev) => [...prev, prepared]);
+
+        closeModalSafely("createPackageModal");
+
+        // (ออปชัน) reset ฟอร์ม
+        // setNewPkg({
+        //   label: "3 Month",
+        //   months: 3,
+        //   rent: 5000,
+        //   createDate: new Date().toISOString().slice(0, 10),
+        //   active: true,
+        // });
     };
 
     const hasAnyFilter =
@@ -181,9 +238,9 @@ function PackageManagement() {
                                         </button>
 
                                         <div className="input-group tm-search">
-                      <span className="input-group-text bg-white border-end-0">
-                        <i className="bi bi-search"></i>
-                      </span>
+                                            <span className="input-group-text bg-white border-end-0">
+                                                <i className="bi bi-search"></i>
+                                            </span>
 
                                             <input
                                                 type="text"
@@ -196,13 +253,6 @@ function PackageManagement() {
                                     </div>
 
                                     <div className="d-flex align-items-center gap-2">
-                                        <button
-                                            className="btn btn-outline-light text-danger border-0"
-                                            onClick={deleteSelected}
-                                            title="Bulk delete"
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
                                         <button
                                             type="button"
                                             className="btn btn-primary"
@@ -259,12 +309,13 @@ function PackageManagement() {
                                             </td>
 
                                             <td className="align-middle">
-                                                <span className="badge rounded-pill px-3 py-2"
-                                                      style={{ backgroundColor: item.color }}
-                                                >
-                                                    <i className="bi bi-circle-fill me-2"></i>
-                                                    {item.label}
-                                                </span>
+                          <span
+                              className="badge rounded-pill px-3 py-2"
+                              style={{ backgroundColor: withColor(item).color }}
+                          >
+                            <i className="bi bi-circle-fill me-2"></i>
+                              {item.label}
+                          </span>
                                             </td>
 
                                             <td className="align-middle">
@@ -329,8 +380,7 @@ function PackageManagement() {
                                     setNewPkg((p) => ({
                                         ...p,
                                         label: v,
-                                        months: preset.months,
-                                        color: preset.color,
+                                        months: preset.months, // สีจะ derive ตอนบันทึก
                                     }));
                                 }}
                                 required

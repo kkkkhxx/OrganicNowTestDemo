@@ -10,12 +10,8 @@ import TenantDetail from "./pages/tenantdetail";
 import RoomDetail from "./pages/roomdetail";
 import Invoicemanagement from "./pages/Invoicemanagement";
 import InvoiceDetails from "./pages/Invoicedetails";
-
-// ของ branch package-table
 import PackageManagement from "./pages/PackageManagement";
 import MaintenanceSchedule from "./pages/MaintenanceSchedule";
-
-// ของ branch main
 import RoomManagement from "./pages/roommanagement";
 
 const router = createBrowserRouter([

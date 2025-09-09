@@ -3,7 +3,7 @@ import Layout from "../component/layout";
 import Modal from "../component/modal";
 import Pagination from "../component/pagination";
 import { pageSize as defaultPageSize } from "../config_variable";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import * as bootstrap from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -40,6 +40,40 @@ function MaintenanceSchedule() {
         dateFrom: "",
         dateTo: "",
     });
+
+    // ---- ใกล้บนไฟล์: เพิ่มสถานะกำลังบันทึก ----
+    const [saving, setSaving] = useState(false);
+
+// (ออปชัน) ฟังก์ชัน validate เบื้องต้น
+    const validateNewSch = () => {
+        if (newSch.scope === "Asset") {
+            if (!newSch.asset?.trim()) return "กรุณาเลือก Asset";
+        } else {
+            if (!newSch.asset?.trim()) return "กรุณากรอก Asset";
+        }
+        if (!newSch.cycle || newSch.cycle < 1) return "Cycle ต้องเป็นตัวเลขตั้งแต่ 1 เดือนขึ้นไป";
+        if (newSch.notify < 0) return "Notify ต้องไม่ติดลบ";
+        return null;
+    };
+
+
+// ---- ปรับ addSchedule ให้คืนค่าหลังบันทึกเสร็จ (เผื่ออนาคตไปเรียก API) ----
+    const addSchedule = async () => {
+        const nextDate = addMonthsISO(newSch.lastDate, newSch.cycle);
+
+        // ถ้ามี backend จริง ๆ: await fetch(...)
+        setSchedules((prev) => [
+            ...prev,
+            {
+                id: prev.length ? Math.max(...prev.map((p) => p.id)) + 1 : 1,
+                ...newSch,
+                cycle: Number(newSch.cycle),
+                notify: Number(newSch.notify),
+                nextDate,
+            },
+        ]);
+    };
+
     const clearFilters = () =>
         setFilters({ scope: "ALL", cycleMin: "", cycleMax: "", notifyMin: "", notifyMax: "", dateFrom: "", dateTo: "" });
 
@@ -119,35 +153,12 @@ function MaintenanceSchedule() {
 
     // --------- CREATE SCHEDULE (Modal) ----------
     const [newSch, setNewSch] = useState({
-        scope: "Asset",
+        scope: "",
         asset: "",
-        cycle: 6,
-        notify: 7,
+        cycle: "",
+        notify: "",
         lastDate: new Date().toISOString().slice(0, 10),
     });
-
-    const addSchedule = () => {
-        const nextDate = addMonthsISO(newSch.lastDate, newSch.cycle);
-        setSchedules((prev) => [
-            ...prev,
-            {
-                id: prev.length ? Math.max(...prev.map((p) => p.id)) + 1 : 1,
-                ...newSch,
-                cycle: Number(newSch.cycle),
-                notify: Number(newSch.notify),
-                nextDate,
-            },
-        ]);
-
-        // ปิด modal
-        const modalEl = document.getElementById("createScheduleModal");
-        if (modalEl) {
-            const modal = window.bootstrap?.Modal.getOrCreateInstance(modalEl);
-            modal?.hide();
-        }
-        // reset ฟอร์มเบา ๆ
-        setNewSch((p) => ({ ...p, asset: "" }));
-    };
 
     const hasAnyFilter =
         filters.scope !== "ALL" ||
@@ -166,6 +177,72 @@ function MaintenanceSchedule() {
     if (filters.notifyMax !== "") filterSummary.push(`Notify ≤ ${filters.notifyMax}`);
     if (filters.dateFrom) filterSummary.push(`From ${filters.dateFrom}`);
     if (filters.dateTo) filterSummary.push(`To ${filters.dateTo}`);
+
+    const closeModalSafely = () => {
+        // 1) หา modal ที่เปิดอยู่จริงแล้วสั่ง hide + dispose
+        const opened = document.querySelector(".modal.show");
+        if (opened) {
+            const inst = bootstrap.Modal.getInstance(opened) || new bootstrap.Modal(opened);
+            inst.hide();
+            inst.dispose(); // กัน instance ค้าง
+        }
+
+        // 2) เผื่อ Bootstrap ไม่ได้เก็บ backdrop ออก (เช่น โดน wrapper ครอบ)
+        document.querySelectorAll(".modal-backdrop").forEach((el) => el.remove());
+
+        // 3) เอาคลาส/สไตล์ lock ออกจาก body
+        document.body.classList.remove("modal-open");
+        document.body.style.removeProperty("overflow");
+        document.body.style.removeProperty("paddingRight");
+    };
+
+    // รายการ asset (mock) + สถานะโหลด/เออเรอร์
+    const [assetOptions, setAssetOptions] = useState([]);
+    const [assetLoading, setAssetLoading] = useState(false);
+    const [assetError, setAssetError] = useState(null);
+
+// โหลดรายการ asset (mock)
+    const loadAssets = async () => {
+        try {
+            setAssetError(null);
+            setAssetLoading(true);
+
+            // ===== MOCK DATA =====
+            // สมมติว่าได้จาก API
+            const mock = [
+                { id: "AST-001", name: "Air Conditioner - Lobby" },
+                { id: "AST-002", name: "Elevator - A" },
+                { id: "AST-003", name: "Generator - West Wing" },
+                { id: "AST-004", name: "Water Pump - B1" },
+            ];
+            // หน่วงเวลาจำลองโหลดข้อมูล
+            await new Promise((r) => setTimeout(r, 300));
+            setAssetOptions(mock);
+
+            // ===== ดึงจากฐานข้อมูลจริง (ตัวอย่าง) =====
+            // NOTE: คอมเมนต์ไว้ก่อนตามที่ขอ
+            // const res = await fetch("/api/assets?active=true");
+            // if (!res.ok) throw new Error("Fetch assets failed");
+            // const data = await res.json(); // [{id,name}]
+            // setAssetOptions(data);
+
+        } catch (e) {
+            console.error(e);
+            setAssetError("โหลดรายการ Asset ไม่สำเร็จ");
+        } finally {
+            setAssetLoading(false);
+        }
+    };
+
+// เมื่อสลับเป็น Scope = "Asset" ให้โหลดรายการ
+    useEffect(() => {
+        if (newSch.scope === "Asset") {
+            loadAssets();
+            // ถ้าเดิมเป็นข้อความ ให้เคลียร์ค่าเพื่อบังคับให้เลือกใหม่ (กันค่าค้าง)
+            setNewSch((p) => ({ ...p, asset: "" }));
+        }
+    }, [newSch.scope]);
+
 
     return (
         <Layout title="Maintenance Schedule" icon="bi bi-alarm" notifications={0}>
@@ -195,9 +272,9 @@ function MaintenanceSchedule() {
                                         </button>
 
                                         <div className="input-group tm-search">
-                      <span className="input-group-text bg-white border-end-0">
-                        <i className="bi bi-search"></i>
-                      </span>
+                                            <span className="input-group-text bg-white border-end-0">
+                                                <i className="bi bi-search"></i>
+                                            </span>
                                             <input
                                                 type="text"
                                                 className="form-control border-start-0"
@@ -253,7 +330,7 @@ function MaintenanceSchedule() {
                                         />
                                     </th>
                                     <th className="text-start align-middle header-color">Scope</th>
-                                    <th className="text-start align-middle header-color">Asset</th>
+                                    <th className="text-start align-middle header-color">Target</th>
                                     <th className="text-start align-middle header-color">Cycle</th>
                                     <th className="text-start align-middle header-color">Notify</th>
                                     <th className="text-start align-middle header-color">Last date</th>
@@ -315,14 +392,42 @@ function MaintenanceSchedule() {
             </div>
 
             {/* Create Schedule Modal */}
-            <Modal id="createScheduleModal" title="Create Schedule" icon="bi bi-calendar-week" size="modal-lg">
+            <Modal id="createScheduleModal" title="Create Schedule" icon="bi bi-alarm" size="modal-lg">
                 <form
-                    onSubmit={(e) => {
+                    onSubmit={async (e) => {
                         e.preventDefault();
-                        addSchedule(); // บันทึกและปิด modal
+                        const err = validateNewSch();
+                        if (err) {
+                            alert(err);
+                            return;
+                        }
+                        try {
+                            setSaving(true);
+                            await addSchedule(); // บันทึกให้เรียบร้อยก่อน
+                            closeModalSafely();
+                            // ปิด modal หลังบันทึกสำเร็จ
+                            const modalEl = document.getElementById("createScheduleModal");
+                            if (modalEl) {
+                                const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                                modal.hide();
+                            } else {
+                                // เผื่อกรณี id ไม่ได้อยู่ที่ .modal root
+                                const opened = document.querySelector(".modal.show");
+                                if (opened) {
+                                    bootstrap.Modal.getInstance(opened)?.hide();
+                                }
+                            }
+                            // reset ฟอร์มตามต้องการ
+                            setNewSch((p) => ({ ...p, asset: "" }));
+                        } catch (e2) {
+                            console.error(e2);
+                            alert("บันทึกไม่สำเร็จ");
+                        } finally {
+                            setSaving(false);
+                        }
                     }}
                 >
-                    <div className="row g-3">
+                <div className="row g-3">
                         <div className="col-md-6">
                             <label className="form-label">Scope</label>
                             <select
@@ -336,23 +441,47 @@ function MaintenanceSchedule() {
                             </select>
                         </div>
 
-                        <div className="col-md-6">
-                            <label className="form-label">Asset</label>
+                    <div className="col-md-6">
+                        <label className="form-label">Target</label>
+
+                        {newSch.scope === "Asset" ? (
+                            <>
+                                <select
+                                    className="form-select"
+                                    value={newSch.asset}
+                                    onChange={(e) => setNewSch((p) => ({ ...p, asset: e.target.value }))}
+                                    required
+                                    disabled={assetLoading}
+                                >
+                                    <option value="">{assetLoading ? "Loading..." : "Select Asset"}</option>
+                                    {assetOptions.map((a) => (
+                                        <option key={a.id} value={a.name}>
+                                            {a.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {assetError && (
+                                    <div className="form-text text-danger">{assetError}</div>
+                                )}
+                            </>
+                        ) : (
                             <input
                                 type="text"
                                 className="form-control"
-                                placeholder="e.g. Air conditioner"
+                                placeholder="e.g. Plumbing, Water leak"
                                 value={newSch.asset}
                                 onChange={(e) => setNewSch((p) => ({ ...p, asset: e.target.value }))}
                                 required
                             />
-                        </div>
+                        )}
+                    </div>
 
-                        <div className="col-md-4">
+                    <div className="col-md-4">
                             <label className="form-label">Cycle (months)</label>
                             <input
                                 type="number"
                                 className="form-control"
+                                placeholder="e.g. 6"
                                 value={newSch.cycle}
                                 min={1}
                                 onChange={(e) => setNewSch((p) => ({ ...p, cycle: Number(e.target.value) }))}
@@ -365,6 +494,7 @@ function MaintenanceSchedule() {
                             <input
                                 type="number"
                                 className="form-control"
+                                placeholder="e.g. 7"
                                 value={newSch.notify}
                                 min={0}
                                 onChange={(e) => setNewSch((p) => ({ ...p, notify: Number(e.target.value) }))}
@@ -381,9 +511,6 @@ function MaintenanceSchedule() {
                                 onChange={(e) => setNewSch((p) => ({ ...p, lastDate: e.target.value }))}
                                 required
                             />
-                            <div className="form-text">
-                                Next date จะคำนวณอัตโนมัติจาก Last date + Cycle
-                            </div>
                         </div>
 
                         <div className="col-12 d-flex justify-content-center gap-3 pt-3 pb-3">
@@ -394,9 +521,17 @@ function MaintenanceSchedule() {
                             >
                                 Cancel
                             </button>
-                            <button type="submit" className="btn btn-primary">
-                                Save
+                            <button type="submit" className="btn btn-primary" disabled={saving}>
+                                {saving ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Saving...
+                                    </>
+                                ) : (
+                                    "Save"
+                                )}
                             </button>
+
                         </div>
                     </div>
                 </form>
