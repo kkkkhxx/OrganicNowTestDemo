@@ -1,16 +1,23 @@
 package com.organicnow.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
-@Data                  // สร้าง getter/setter, toString, equals, hashCode ให้อัตโนมัติ
-@AllArgsConstructor   // สร้าง constructor ที่รับทุก field ให้อัตโนมัติ
+@Data
+@AllArgsConstructor
 public class PackagePlanDto {
     private Long id;
+
     private BigDecimal price;
+
+    @JsonProperty("is_active")
     private Integer isActive;
+
+    @JsonProperty("contract_name")
     private String name;
+
     private Integer duration;
 }

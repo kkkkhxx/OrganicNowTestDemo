@@ -1,39 +1,45 @@
 package com.organicnow.backend.controller;
 
 import com.organicnow.backend.model.ContractType;
-import com.organicnow.backend.service.ContactTypeService;
+import com.organicnow.backend.service.ContractTypeService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
-@RequestMapping("/contact-types")
+@RequestMapping("/contract-types")
 @CrossOrigin(origins = "http://localhost:5173")
 public class ContractTypeController {
 
-    private final ContactTypeService contactTypeService;
+    private final ContractTypeService contractTypeService;
 
-    public ContractTypeController(ContactTypeService contactTypeService) {
-        this.contactTypeService = contactTypeService;
+    public ContractTypeController(ContractTypeService contractTypeService) {
+        this.contractTypeService = contractTypeService;
     }
 
     @GetMapping
-    public Map<String, Object> getAllContactTypes() {
-        return contactTypeService.getAllContactTypes();
+    public ResponseEntity<List<ContractType>> getAllContractTypes() {
+        List<ContractType> types = contractTypeService.getAllContractTypes();
+        return ResponseEntity.ok(types);
     }
 
     @GetMapping("/{id}")
-    public Map<String, Object> getContactTypeById(@PathVariable Long id) {
-        return contactTypeService.getContactTypeById(id);
+    public ResponseEntity<ContractType> getContractTypeById(@PathVariable Long id) {
+        ContractType type = contractTypeService.getContractTypeById(id);
+        return ResponseEntity.ok(type);
     }
 
     @PostMapping
-    public Map<String, Object> createContactType(@RequestBody ContractType contractType) {
-        return contactTypeService.createContactType(contractType);
+    public ResponseEntity<ContractType> createContractType(@RequestBody ContractType contractType) {
+        ContractType saved = contractTypeService.createContractType(contractType);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @DeleteMapping("/{id}")
-    public Map<String, Object> deleteContactType(@PathVariable Long id) {
-        return contactTypeService.deleteContactType(id);
+    public ResponseEntity<Void> deleteContractType(@PathVariable Long id) {
+        contractTypeService.deleteContractType(id);
+        return ResponseEntity.noContent().build();
     }
 }
