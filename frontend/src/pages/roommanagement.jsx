@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Layout from "../component/layout";
 import Modal from "../component/modal";
@@ -13,24 +13,13 @@ function RoomManagement() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 1) Pagination state (คำนวณจาก data ในหน้านี้)
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);      // แก้ค่าเริ่มให้เป็น 1
   const [totalRecords, setTotalRecords] = useState(0);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-      fetchData?.(page);
-    }
-  };
-  const handlePageSizeChange = (size) => {
-    setPageSize(size);
-    fetchData?.(1);
-    setCurrentPage(1);
-  };
-
-  // ข้อมูลเริ่มต้นไม่มี rid มีเฉพาะ room/floor/status/request
+  // 2) Mock data
   const [data, setData] = useState([
     { room: "101", floor: "1", status: "Unavailable", request: 1 },
     { room: "102", floor: "1", status: "Unavailable", request: 0 },
@@ -40,10 +29,36 @@ function RoomManagement() {
     { room: "110", floor: "1", status: "Available", request: 0 },
   ]);
 
+  // 3) คำนวณ totalRecords/totalPages ทุกครั้งที่ data หรือ pageSize เปลี่ยน
+  useEffect(() => {
+    const total = data.length;
+    const pages = Math.max(1, Math.ceil(total / pageSize));
+    setTotalRecords(total);
+    setTotalPages(pages);
+    setCurrentPage((p) => Math.min(Math.max(1, p), pages)); // กันหน้าเกิน
+  }, [data, pageSize]);
+
+  // 4) slice ข้อมูลตามหน้า + คำนวณลำดับ (order)
+  const startIdx = (currentPage - 1) * pageSize;
+  const pagedData = data.slice(startIdx, startIdx + pageSize);
+
+  // 5) เปลี่ยนหน้า/เปลี่ยนขนาดหน้า (ลบ fetchData ออก)
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
+  // ----- ฟอร์มใน Modal -----
+  const [form, setForm] = useState({ floor: "", room: "", assets: [] });
+
   const floorOptions = [
     { value: "1", label: "Floor 1" },
     { value: "2", label: "Floor 2" },
   ];
+
   const allRooms = [
     { value: "101", label: "Room 101", floor: "1" },
     { value: "102", label: "Room 102", floor: "1" },
@@ -51,6 +66,7 @@ function RoomManagement() {
     { value: "201", label: "Room 201", floor: "2" },
     { value: "202", label: "Room 202", floor: "2" },
   ];
+
   const assetOptions = [
     { value: "mesh", label: "Mesh screen" },
     { value: "light", label: "Light" },
@@ -64,38 +80,6 @@ function RoomManagement() {
     { value: "fan", label: "Fan" },
   ];
 
-  const [form, setForm] = useState({ floor: "", room: "", assets: [] });
-
-  const roomOptions = useMemo(
-    () => allRooms.filter((r) => r.floor === form.floor),
-    [form.floor]
-  );
-
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "floor") {
-      setForm((s) => ({ ...s, floor: value, room: "" }));
-    } else {
-      setForm((s) => ({ ...s, [name]: value }));
-    }
-  };
-
-  const handleAddAsset = (e) => {
-    const val = e.target.value;
-    if (!val) return;
-    const label = assetOptions.find((a) => a.value === val)?.label ?? val;
-    setForm((s) =>
-      s.assets.includes(label) ? s : { ...s, assets: [...s.assets, label] }
-    );
-    e.target.value = "";
-  };
-
-  const handleRemoveAsset = (label) => {
-    setForm((s) => ({ ...s, assets: s.assets.filter((a) => a !== label) }));
-  };
-
-  const isFormValid = form.floor && form.room && form.assets.length > 0;
-
   const resetForm = () => setForm({ floor: "", room: "", assets: [] });
 
   const closeModal = () => {
@@ -105,43 +89,29 @@ function RoomManagement() {
 
   const handleCreateRoom = (e) => {
     e.preventDefault();
-    if (!isFormValid) return;
 
-    // สร้างแถวใหม่ (ไม่จำเป็นต้องแสดง rid ในตาราง)
     const nextNum = data.length + 1;
     const newRid = `R${String(nextNum).padStart(2, "0")}`;
-
     const newRow = {
-      rid: newRid, // เก็บไว้เผื่อใช้ภายหลัง แต่ไม่ได้แสดงในตารางนี้
+      rid: newRid,
       floor: form.floor,
       room: form.room,
       status: "Available",
       request: 0,
       assets: form.assets,
     };
+      setData((prev) => [...prev, newRow]);
 
-    setData((prev) => [newRow, ...prev]);
-    resetForm();
-    closeModal();
+      resetForm();
+      closeModal();
+
   };
 
-  const [selectedItems, setSelectedItems] = useState([]);
-  const handleSelectRow = (rowIndex) => {
-    setSelectedItems((prev) =>
-      prev.includes(rowIndex)
-        ? prev.filter((i) => i !== rowIndex)
-        : [...prev, rowIndex]
-    );
-  };
-  const handleSelectAll = () => {
-    if (selectedItems.length === data.length) setSelectedItems([]);
-    else setSelectedItems(data.map((_, idx) => idx));
-  };
-  const isAllSelected = data.length > 0 && selectedItems.length === data.length;
+  // ----- Selection/Toggles อิง "index รวม" + Select All เฉพาะหน้าปัจจุบัน -----
+  const [selectedItems, setSelectedItems] = useState([]); // เก็บเป็น index รวม (global)
 
   const handleDelete = (item) => console.log("Delete: ", item);
 
-  // เอา rid ออกเพื่อหลีกเลี่ยง undefined ในรายการเริ่มต้น
   const handleViewRoom = (item) => {
     navigate("/roomdetail", {
       state: {
@@ -153,19 +123,19 @@ function RoomManagement() {
     });
   };
 
-  const toggleStatus = (idx) => {
+  const toggleStatus = (globalIndex) => {
     setData((prev) =>
       prev.map((r, i) =>
-        i === idx
+        i === globalIndex
           ? { ...r, status: r.status === "Available" ? "Unavailable" : "Available" }
           : r
       )
     );
   };
 
-  const StatusPill = ({ ok }) => (
-    <span className={`badge rounded-pill ${ok ? "bg-success" : "bg-danger"}`}>
-      {ok ? "Available" : "Unavailable"}
+  const StatusPill = ({ status }) => (
+    <span className={`badge rounded-pill ${status === "Available" ? "bg-success" : "bg-danger"}`}>
+      {status}
     </span>
   );
 
@@ -217,17 +187,10 @@ function RoomManagement() {
             {/* Table */}
             <div className="table-wrapper">
               <table className="table text-nowrap align-middle tm-left">
-                {/* หัวตารางสีน้ำเงิน */}
                 <thead className="header-color">
                   <tr>
-                    <th className="checkbox-cell">
-                      <input
-                        type="checkbox"
-                        checked={isAllSelected}
-                        onChange={handleSelectAll}
-                        aria-label="Select all rows"
-                      />
-                    </th>
+                    {/* Removed checkbox column */}
+                    <th>Order</th>
                     <th>Room</th>
                     <th>Floor</th>
                     <th>Status</th>
@@ -236,22 +199,16 @@ function RoomManagement() {
                   </tr>
                 </thead>
 
-                {/* เนื้อหาตาราง ให้ลำดับและฟิลด์ตรงกับหัวตาราง */}
                 <tbody>
-                  {data.length > 0 ? (
-                    data.map((item, idx) => {
-                      const ok = item.status.toLowerCase() === "available";
+                  {pagedData.length > 0 ? (
+                    pagedData.map((item, idx) => {
+                      const globalIndex = startIdx + idx; // index รวม
+                      const order = startIdx + idx + 1;    // หมายเลขลำดับ
+
                       return (
-                        <tr key={idx}>
-                          {/* checkbox */}
-                          <td className="checkbox-cell">
-                            <input
-                              type="checkbox"
-                              checked={selectedItems.includes(idx)}
-                              onChange={() => handleSelectRow(idx)}
-                              aria-label={`Select row ${idx + 1}`}
-                            />
-                          </td>
+                        <tr key={`${item.room}-${globalIndex}`}>
+                          {/* Order */}
+                          <td>{order}</td>
 
                           {/* Room */}
                           <td>{item.room}</td>
@@ -261,23 +218,15 @@ function RoomManagement() {
 
                           {/* Status */}
                           <td>
-                            <button
-                              className="btn btn-link p-0 border-0 text-decoration-none"
-                              onClick={() => toggleStatus(idx)}
-                              title="Toggle status"
-                            >
-                              <StatusPill ok={ok} />
-                            </button>
+                            <StatusPill status={item.status} />
                           </td>
 
                           {/* Request */}
                           <td>
                             <span
-                              className={`request-dot ${
-                                item.request === 1 ? "request-active" : "request-inactive"
-                              }`}
+                              className={`request-dot ${item.request === 1 ? "request-active" : "request-inactive"}`}
                               title={item.request === 1 ? "มีการรีเควส" : "ไม่มีรีเควส"}
-                            ></span>
+                            />
                           </td>
 
                           {/* Action */}
@@ -304,7 +253,7 @@ function RoomManagement() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="7">Data Not Found</td>
+                      <td colSpan="6">Data Not Found</td>
                     </tr>
                   )}
                 </tbody>
@@ -318,107 +267,117 @@ function RoomManagement() {
               totalRecords={totalRecords}
               onPageSizeChange={handlePageSizeChange}
             />
-
-            {/* Modal */}
-            <Modal
-              id="exampleModal"
-              title="Create Room"
-              icon="bi bi-door-open"
-              size="modal-lg"
-              scrollable="modal-dialog-scrollable"
-            >
-              <form onSubmit={handleCreateRoom}>
-                <div className="row g-4">
-                  <div className="col-md-6">
-                    <label className="form-label">Floor</label>
-                    <select
-                      name="floor"
-                      className="form-select"
-                      value={form.floor}
-                      onChange={handleFormChange}
-                    >
-                      <option value="">Add Floor</option>
-                      {floorOptions.map((f) => (
-                        <option key={f.value} value={f.value}>
-                          {f.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">Room</label>
-                    <select
-                      name="room"
-                      className="form-select"
-                      value={form.room}
-                      onChange={handleFormChange}
-                      disabled={!form.floor}
-                    >
-                      <option value="">
-                        {form.floor ? "Add Room" : "Select floor first"}
-                      </option>
-                      {roomOptions.map((r) => (
-                        <option key={r.value} value={r.value}>
-                          {r.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Asset multi-select + tags */}
-                  <div className="col-12">
-                    <label className="form-label">Asset</label>
-                    <select className="form-select" onChange={handleAddAsset} defaultValue="">
-                      <option value="">Select Asset</option>
-                      {assetOptions.map((a) => (
-                        <option key={a.value} value={a.value}>
-                          {a.label}
-                        </option>
-                      ))}
-                    </select>
-
-                    <div className="d-flex flex-wrap gap-2 mt-3">
-                      {form.assets.map((a) => (
-                        <span
-                          key={a}
-                          className="badge rounded-pill border border-primary text-primary px-3 py-2"
-                        >
-                          {a}
-                          <button
-                            type="button"
-                            className="btn-close btn-close-sm ms-2"
-                            aria-label="Remove"
-                            onClick={() => handleRemoveAsset(a)}
-                            style={{ fontSize: "0.6rem" }}
-                          />
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="d-flex justify-content-center gap-3 mt-5">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => {
-                      resetForm();
-                      closeModal();
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn btn-primary" disabled={!isFormValid}>
-                    Save
-                  </button>
-                </div>
-              </form>
-            </Modal>
           </div>
           {/* /Main */}
         </div>
       </div>
+
+      {/* Modal */}
+      <Modal
+        id="exampleModal"
+        title="Create Room"
+        icon="bi bi-door-open"
+        size="modal-lg"
+        scrollable="modal-dialog-scrollable"
+      >
+        <form onSubmit={handleCreateRoom}>
+          <div className="row g-4">
+            <div className="col-md-6">
+              <label className="form-label">Floor</label>
+              <select
+                name="floor"
+                className="form-select"
+                value={form.floor}
+                onChange={(e) => setForm((s) => ({ ...s, floor: e.target.value }))}
+              >
+                <option value="">Add Floor</option>
+                {floorOptions.map((f) => (
+                  <option key={f.value} value={f.value}>
+                    {f.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label">Room</label>
+              <select
+                name="room"
+                className="form-select"
+                value={form.room}
+                onChange={(e) => setForm((s) => ({ ...s, room: e.target.value }))}
+                disabled={!form.floor}
+              >
+                <option value="">{form.floor ? "Add Room" : "Select floor first"}</option>
+                {allRooms.filter((r) => r.floor === form.floor).map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="col-12">
+              <label className="form-label">Asset</label>
+              <select
+                className="form-select"
+                onChange={(e) => {
+                  const asset = e.target.value;
+                  if (asset && !form.assets.includes(asset)) {
+                    setForm((s) => ({ ...s, assets: [...s.assets, asset] }));
+                  }
+                }}
+                value=""
+              >
+                <option value="">Select Asset</option>
+                {assetOptions.map((a) => (
+                  <option key={a.value} value={a.value}>
+                    {a.label}
+                  </option>
+                ))}
+              </select>
+
+              <div className="d-flex flex-wrap gap-2 mt-3">
+                {form.assets.map((asset) => (
+                  <span key={asset} className="badge rounded-pill border border-primary text-primary px-3 py-2">
+                    {asset}
+                    <button
+                      type="button"
+                      className="btn-close btn-close-sm ms-2"
+                      aria-label="Remove"
+                      onClick={() => {
+                        setForm((s) => ({
+                          ...s,
+                          assets: s.assets.filter((a) => a !== asset),
+                        }));
+                      }}
+                      style={{ fontSize: "0.6rem" }}
+                    />
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="d-flex justify-content-center gap-3 mt-5">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              data-bs-dismiss="modal"
+              onClick={resetForm}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={!form.floor || !form.room || form.assets.length === 0}
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </Modal>
     </Layout>
   );
 }

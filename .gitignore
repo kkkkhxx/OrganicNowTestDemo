@@ -1,15 +1,15 @@
-# IDE / Editor
+# ---- IDE / Editor ----
 .idea/
 *.iml
 .vscode/
 *.code-workspace
 out/
 
-# OS files
+# ---- OS files ----
 .DS_Store
 Thumbs.db
 
-# Logs
+# ---- Logs ----
 *.log
 logs/
 npm-debug.log*
@@ -18,7 +18,36 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Environment files
+# ---- Node / Frontend ----
+node_modules/
+dist/
+build/
+.cache/
+.next/
+coverage/
+
+# ---- Java / Backend ----
+target/
+build/
+*.class
+*.jar
+*.war
+*.ear
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Maven
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+
+# ---- Spring Boot Config ----
+application-*.yml
+application-*.properties
+
+# ---- Environment files ----
+.env
 .env.local
 .env.development.local
 .env.test.local

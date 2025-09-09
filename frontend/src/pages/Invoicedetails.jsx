@@ -50,7 +50,7 @@ function InvoiceDetails() {
           <div className="col-lg-11 p-4">
             {/* Toolbar Card */}
             <div className="toolbar-wrapper card border-0 bg-white">
-              <div className="card-header bg-white border-0">
+              <div className="card-header bg-white border-0 rounded-2">
                 <div className="tm-toolbar d-flex justify-content-between align-items-center">
                   {/* Left cluster: Breadcrumb */}
                   <div className="d-flex align-items-center gap-2">
@@ -79,12 +79,12 @@ function InvoiceDetails() {
               </div>
             </div>
 
-            <div className="table-wrapper-detail">
+            <div className="table-wrapper-detail rounded-0">
               <div className="row g-4">
                 {/* Left Column - Room & Tenant Info */}
                 <div className="col-lg-6">
                   {/* Room Information */}
-                  <div className="card border-0 shadow-sm mb-3">
+                  <div className="card border-0 shadow-sm mb-3 rounded-2">
                     <div className="card-body">
                       <h5 className="card-title">Room Information</h5>
                       <p>
@@ -99,7 +99,7 @@ function InvoiceDetails() {
                   </div>
 
                   {/* Tenant Information */}
-                  <div className="card border-0 shadow-sm">
+                  <div className="card border-0 shadow-sm rounded-2">
                     <div className="card-body">
                       <h5 className="card-title">Tenant Information</h5>
                       <p>
@@ -149,7 +149,7 @@ function InvoiceDetails() {
                 {/* Right Column - Invoice & Penalty Info */}
                 <div className="col-lg-6">
                   {/* Invoice Information */}
-                  <div className="card border-0 shadow-sm mb-3">
+                  <div className="card border-0 shadow-sm mb-3 rounded-2">
                     <div className="card-body">
                       <h5 className="card-title">Invoice Information</h5>
                       <div className="row">
@@ -199,7 +199,7 @@ function InvoiceDetails() {
                   </div>
 
                   {/* Penalty Information */}
-                  <div className="card border-0 shadow-sm">
+                  <div className="card border-0 shadow-sm rounded-2">
                     <div className="card-body">
                       <h5 className="card-title">Penalty Information</h5>
                       <div className="row">
