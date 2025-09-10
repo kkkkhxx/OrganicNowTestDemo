@@ -15,7 +15,7 @@ export default function SideBar() {
           <NavLink to="/" end className={linkClass}><i className="pi pi-home icon-lg" /></NavLink>
           <NavLink to="/TenantManagement" className={linkClass}><i className="pi pi-user icon-lg" /></NavLink>
           <NavLink to="/RoomManagement" className={linkClass}><i className="bi bi-building icon-lg" /> </NavLink>
-          <NavLink to="/test" end className={linkClass}><i className="pi pi-wrench icon-lg" /></NavLink>
+          <NavLink to="/Maintenancerequest" end className={linkClass}><i className="pi pi-wrench icon-lg" /></NavLink>
           <NavLink to="/test" className={linkClass}><i className="bi bi-box-seam icon-lg" /></NavLink>
           <NavLink to="/Invoicemanagement" className={linkClass}><i className="bi bi-currency-dollar icon-lg" /> </NavLink>
           <NavLink to="/MaintenanceSchedule" className={linkClass}><i className="bi bi-alarm icon-lg" /> </NavLink>

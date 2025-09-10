@@ -432,6 +432,7 @@ function MaintenanceSchedule() {
                                 onChange={(e) => setNewSch((p) => ({ ...p, scope: e.target.value }))}
                                 required
                             >
+                                <option value="">{assetLoading ? "Loading..." : "Select Asset"}</option>
                                 <option>Asset</option>
                                 <option>Building</option>
                             </select>
