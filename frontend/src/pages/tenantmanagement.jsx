@@ -24,7 +24,16 @@ function TenantManagement() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [nationalId, setNationalId] = useState("");
 
-  const navigate = useNavigate();
+    // ===== New states for modal form =====
+    const [packageId, setPackageId] = useState("");
+    const [startDate, setStartDate] = useState("");
+
+// Floor / Room (dependent selects)
+    const [rooms, setRooms] = useState([]);
+    const [selectedFloor, setSelectedFloor] = useState("");
+    const [selectedRoomId, setSelectedRoomId] = useState("");
+
+    const navigate = useNavigate();
 
   const formatDate = (v) => {
     if (!v) return "";
@@ -425,15 +434,187 @@ function TenantManagement() {
         </div>
       </div>
 
-      <Modal
-        id="exampleModal"
-        title="Add User"
-        icon="bi bi-person-plus"
-        size="modal-lg"
-        scrollable="modal-dialog-scrollable"
-      >
-        <p>Form ใส่เนื้อหา</p>
-      </Modal>
+        <Modal
+            id="exampleModal"
+            title="Add User"
+            icon="bi bi-person-plus"
+            size="modal-lg"
+            scrollable="modal-dialog-scrollable"
+        >
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    // ผูก Save กับฟังก์ชันเดิม
+                    handleSaveCreate();
+                }}
+            >
+                {/* ---------- General Information ---------- */}
+                <div className="mb-4">
+                    <div className="fw-semibold mb-2">General Information</div>
+
+                    <div className="row g-3">
+                        <div className="col-md-6">
+                            <label className="form-label">First Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Tenant First Name"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                            />
+                        </div>
+                        <div className="col-md-6">
+                            <label className="form-label">Last Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Tenant Last Name"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="col-md-6">
+                            <label className="form-label">National ID</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Tenant National ID"
+                                value={nationalId}
+                                onChange={(e) => setNationalId(e.target.value)}
+                            />
+                        </div>
+                        <div className="col-md-6">
+                            <label className="form-label">Phone Number</label>
+                            <input
+                                type="tel"
+                                className="form-control"
+                                placeholder="Tenant Phone Number"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="col-md-12">
+                            <label className="form-label">Email</label>
+                            <input
+                                type="email"
+                                className="form-control"
+                                placeholder="Tenant Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* ---------- Room Information ---------- */}
+                <div className="mb-4">
+                    <div className="fw-semibold mb-2">Room Information</div>
+
+                    <div className="row g-3">
+                        <div className="col-md-6">
+                            <label className="form-label">Floor</label>
+                            <div className="position-relative">
+                                {/*<select*/}
+                                {/*    className="form-select"*/}
+                                {/*    value={selectedFloor}*/}
+                                {/*    onChange={(e) => onChangeFloor(e.target.value)}*/}
+                                {/*>*/}
+                                {/*    <option value="">Tenant Floor</option>*/}
+                                {/*    {floors.map((f) => (*/}
+                                {/*        <option key={f} value={f}>*/}
+                                {/*            {f}*/}
+                                {/*        </option>*/}
+                                {/*    ))}*/}
+                                {/*</select>*/}
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <label className="form-label">Room</label>
+                            <div className="position-relative">
+                                {/*<select*/}
+                                {/*    className="form-select"*/}
+                                {/*    value={selectedRoomId}*/}
+                                {/*    onChange={(e) => setSelectedRoomId(e.target.value)}*/}
+                                {/*    disabled={!selectedFloor}*/}
+                                {/*>*/}
+                                {/*    <option value="">*/}
+                                {/*        {selectedFloor ? "Tenant Room" : "Choose floor first"}*/}
+                                {/*    </option>*/}
+                                {/*    {roomsInSelectedFloor.map((r) => (*/}
+                                {/*        <option key={r.id} value={r.id}>*/}
+                                {/*            {r.name ?? r.room ?? r.id}*/}
+                                {/*        </option>*/}
+                                {/*    ))}*/}
+                                {/*</select>*/}
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <label className="form-label">Package</label>
+                            <div className="position-relative">
+                                <select
+                                    className="form-select"
+                                    value={packageId}
+                                    onChange={(e) => setPackageId(e.target.value)}
+                                >
+                                    <option value="">Tenant Package</option>
+                                    {packages.map((p) => (
+                                        <option key={p.id} value={p.id}>
+                                            {p.contract_name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <label className="form-label">Start date</label>
+                            <div className="position-relative">
+                                <input
+                                    type="date"
+                                    className="form-control"
+                                    placeholder="Tenant Start date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ---------- Footer Buttons ---------- */}
+                <div className="d-flex justify-content-center gap-3 pt-3 pb-3">
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        className="btn btn-primary"
+                        disabled={
+                            !firstName ||
+                            !lastName ||
+                            !email ||
+                            !phoneNumber ||
+                            !nationalId ||
+                            !selectedFloor ||
+                            !selectedRoomId ||
+                            !packageId ||
+                            !startDate
+                        }
+                    >
+                        Save
+                    </button>
+                </div>
+            </form>
+        </Modal>
     </Layout>
   );
 }
