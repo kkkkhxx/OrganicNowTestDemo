@@ -1,4 +1,3 @@
-// src/pages/tenantmanagement.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -25,11 +24,8 @@ function TenantManagement() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [nationalId, setNationalId] = useState("");
 
-  const [selectedItems, setSelectedItems] = useState([]);
-
   const navigate = useNavigate();
 
-  // ---------- helpers (สำหรับตาราง) ----------
   const formatDate = (v) => {
     if (!v) return "";
     try {
@@ -43,10 +39,37 @@ function TenantManagement() {
     }
   };
 
-  // map packageId -> label ชั่วคราว
+  const [packages, setPackages] = useState([]);
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const res = await axios.get("http://localhost:8080/packages", {
+          withCredentials: true,
+        });
+        if (Array.isArray(res.data)) {
+          setPackages(res.data);
+        }
+      } catch (err) {
+        console.error("Error fetching packages:", err);
+      }
+    };
+
+    fetchPackages();
+  }, []);
+
   const packageLabel = (pkgId) => {
-    const map = { 1: "1 Year", 2: "6 Month", 3: "3 Month" };
-    return map[pkgId] || "-";
+    const pkg = packages.find((p) => p.id === pkgId);
+    return pkg ? pkg.contract_name : "-";
+  };
+
+  const packageColor = (contractName) => {
+    const map = {
+      "3 เดือน": "#FFC73B", // น้ำเงิน
+      "6 เดือน": "#EF98C4", // เขียว
+      "9 เดือน": "#87C6FF", // เหลือง
+      "1 ปี": "#9691F9", // แดง
+    };
+    return map[contractName] || "#D3D3D3"; // default เทา
   };
 
   const fetchData = async (page = 1) => {
@@ -73,7 +96,6 @@ function TenantManagement() {
       }
 
       setCurrentPage(page);
-      setSelectedItems([]);
     } catch (err) {
       console.error("Error fetching tenants:", err);
       setData([]);
@@ -84,8 +106,10 @@ function TenantManagement() {
 
   useEffect(() => {
     fetchData(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageSize]);
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, data.length);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -159,9 +183,13 @@ function TenantManagement() {
 
       const payload = { firstName, lastName, email, phoneNumber, nationalId };
 
-      const res = await axios.put(`${apiPath}/tenant/update/${tenantId}`, payload, {
-        withCredentials: true,
-      });
+      const res = await axios.put(
+        `${apiPath}/tenant/update/${tenantId}`,
+        payload,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (res.status === 200) {
         document.getElementById("modalForm_btnClose")?.click();
@@ -173,8 +201,10 @@ function TenantManagement() {
     } catch (e) {
       if (e.response && e.response.status === 409) {
         const msg = e.response.data?.message;
-        if (msg === "duplicate_email") setAlertvalidation?.("Email already exists");
-        else if (msg === "duplicate_national_id") setAlertvalidation?.("National ID already exists");
+        if (msg === "duplicate_email")
+          setAlertvalidation?.("Email already exists");
+        else if (msg === "duplicate_national_id")
+          setAlertvalidation?.("National ID already exists");
         else setAlertvalidation?.("Duplicate data");
         return false;
       }
@@ -207,192 +237,204 @@ function TenantManagement() {
     }
   };
 
-  const handleSelectRow = (rowIndex) => {
-    setSelectedItems((prev) =>
-        prev.includes(rowIndex) ? prev.filter((i) => i !== rowIndex) : [...prev, rowIndex]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedItems.length === data.length) {
-      setSelectedItems([]);
-    } else {
-      setSelectedItems(data.map((_, idx) => idx));
-    }
-  };
-
-  const isAllSelected = data.length > 0 && selectedItems.length === data.length;
-
   const handleViewTenant = (tenant) => {
     navigate("/tenantdetail", {
       state: { tenant, fullName: `${tenant.firstName} ${tenant.lastName}` },
     });
   };
 
-  // แจ้งเตือนพื้นฐาน
   const showMessageError = (msg) => alert("❌ Error: " + msg);
   const showMessageSave = () => alert("✅ Success!");
 
   return (
-      <Layout title="Tenant Management" icon="bi bi-people" notifications={3}>
-        <div className="container-fluid">
-          <div className="row min-vh-100">
-            {/* Main */}
-            <div className="col-lg-11 p-4">
-              {/* Toolbar Card */}
-              <div className="toolbar-wrapper card border-0 bg-white">
-                <div className="card-header bg-white border-0">
-                  <div className="tm-toolbar d-flex justify-content-between align-items-center">
-                    {/* Left cluster */}
-                    <div className="d-flex align-items-center gap-3">
-                      <button className="btn btn-link tm-link p-0">
-                        <i className="bi bi-filter me-1"></i> Filter
-                      </button>
-                      <button className="btn btn-link tm-link p-0">
-                        <i className="bi bi-arrow-down-up me-1"></i> Sort
-                      </button>
-                      <div className="input-group tm-search">
+    <Layout title="Tenant Management" icon="bi bi-people" notifications={3}>
+      <div className="container-fluid">
+        <div className="row min-vh-100">
+          {/* Main */}
+          <div className="col-lg-11 p-4">
+            {/* Toolbar Card */}
+            <div className="toolbar-wrapper card border-0 bg-white">
+              <div className="card-header bg-white border-0 rounded-3">
+                <div className="tm-toolbar d-flex justify-content-between align-items-center">
+                  {/* Left cluster */}
+                  <div className="d-flex align-items-center gap-3">
+                    <button className="btn btn-link tm-link p-0">
+                      <i className="bi bi-filter me-1"></i> Filter
+                    </button>
+                    <button className="btn btn-link tm-link p-0">
+                      <i className="bi bi-arrow-down-up me-1"></i> Sort
+                    </button>
+                    <div className="input-group tm-search">
                       <span className="input-group-text bg-white border-end-0">
                         <i className="bi bi-search"></i>
                       </span>
-                        <input type="text" className="form-control border-start-0" placeholder="Search" />
-                      </div>
+                      <input
+                        type="text"
+                        className="form-control border-start-0"
+                        placeholder="Search"
+                      />
                     </div>
+                  </div>
 
-                    {/* Right cluster */}
-                    <div className="d-flex align-items-center gap-2">
-                      <button className="btn btn-outline-light text-danger border-0">
-                        <i className="bi bi-trash"></i>
-                      </button>
-                      <button
-                          type="button"
-                          className="btn btn-primary"
-                          data-bs-toggle="modal"
-                          data-bs-target="#exampleModal"
-                      >
-                        <i className="bi bi-plus-lg me-1"></i> Create Tenant
-                      </button>
-                    </div>
+                  {/* Right cluster */}
+                  <div className="d-flex align-items-center gap-2">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal"
+                    >
+                      <i className="bi bi-plus-lg me-1"></i> Create Tenant
+                    </button>
                   </div>
                 </div>
               </div>
-
-              {/* Data Table */}
-              <div className="table-wrapper">
-                <table className="table text-nowrap">
-                  <thead>
-                  <tr>
-                    <th className="text-center header-color checkbox-cell">
-                      <input
-                          type="checkbox"
-                          checked={isAllSelected}
-                          onChange={handleSelectAll}
-                          aria-label="Select all rows"
-                      />
-                    </th>
-                    <th className="text-start align-middle header-color">First name</th>
-                    <th className="text-start align-middle header-color">Last name</th>
-                    <th className="text-center align-middle header-color">Floor</th>
-                    <th className="text-center align-middle header-color">Room</th>
-                    <th className="text-start align-middle header-color">Package</th>
-                    <th className="text-start align-middle header-color">Start date</th>
-                    <th className="text-start align-middle header-color">End date</th>
-                    <th className="text-start align-middle header-color">Phone Number</th>
-                    <th className="text-center align-middle header-color">Action</th>
-                  </tr>
-                  </thead>
-
-                  <tbody>
-                  {data.length > 0 ? (
-                      data
-                          .slice((currentPage - 1) * pageSize, currentPage * pageSize)
-                          .map((item, idx) => {
-                            const rowKey = item.tenantId ?? item.id ?? `${item.firstName}-${item.room}-${idx}`;
-                            return (
-                                <tr key={rowKey}>
-                                  <td className="align-middle text-center checkbox-cell">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedItems.includes(idx)}
-                                        onChange={() => handleSelectRow(idx)}
-                                        aria-label={`Select row ${idx + 1}`}
-                                    />
-                                  </td>
-
-                                  <td className="align-middle text-start">{item.firstName}</td>
-                                  <td className="align-middle text-start">{item.lastName}</td>
-                                  <td className="align-middle text-center">{item.floor ?? "-"}</td>
-                                  <td className="align-middle text-center">{item.room ?? "-"}</td>
-
-                                  <td className="align-middle text-start">
-                              <span className="badge rounded-pill text-bg-primary px-3">
-                                {item.packageName || packageLabel(item.packageId)}
-                              </span>
-                                  </td>
-
-                                  <td className="align-middle text-start">{formatDate(item.startDate)}</td>
-                                  <td className="align-middle text-start">{formatDate(item.endDate)}</td>
-                                  <td className="align-middle text-start">{item.phoneNumber || "-"}</td>
-
-                                  <td className="align-middle text-center">
-                                    <button
-                                        className="btn btn-sm form-Button-Edit me-1"
-                                        onClick={() => handleViewTenant(item)}
-                                        aria-label="View"
-                                    >
-                                      <i className="bi bi-eye-fill"></i>
-                                    </button>
-                                    <button
-                                        className="btn btn-sm form-Button-Edit me-1"
-                                        onClick={() => handleEdit(item)}
-                                        aria-label="Edit"
-                                    >
-                                      <i className="bi bi-pencil-fill"></i>
-                                    </button>
-                                    <button
-                                        className="btn btn-sm form-Button-Del me-1"
-                                        onClick={() => handleDelete(item.tenantId)}
-                                        aria-label="Delete"
-                                    >
-                                      <i className="bi bi-trash-fill"></i>
-                                    </button>
-                                  </td>
-                                </tr>
-                            );
-                          })
-                  ) : (
-                      <tr>
-                        <td colSpan="10" className="text-center">
-                          Data Not Found
-                        </td>
-                      </tr>
-                  )}
-                  </tbody>
-                </table>
-              </div>
-
-              <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                  totalRecords={totalRecords}
-                  onPageSizeChange={handlePageSizeChange}
-              />
             </div>
-            {/* /Main */}
-          </div>
-        </div>
 
-        <Modal
-            id="exampleModal"
-            title="Add User"
-            icon="bi bi-person-plus"
-            size="modal-lg"
-            scrollable="modal-dialog-scrollable"
-        >
-          <p>Form ใส่เนื้อหา</p>
-        </Modal>
-      </Layout>
+            {/* Data Table */}
+            <div className="table-wrapper">
+              <table className="table text-nowrap">
+                <thead>
+                  <tr>
+                    <th className="text-center align-top header-color">
+                      Order
+                    </th>
+                    <th className="align-top header-color">First name</th>
+                    <th className="text-start align-top header-color">
+                      Last name
+                    </th>
+                    <th className="text-center align-top header-color">
+                      Floor
+                    </th>
+                    <th className="text-center align-top header-color">Room</th>
+                    <th className="text-start align-top header-color">
+                      Package
+                    </th>
+                    <th className="text-start align-top header-color">
+                      Start date
+                    </th>
+                    <th className="text-start align-top header-color">
+                      End date
+                    </th>
+                    <th className="text-start align-top header-color">
+                      Phone Number
+                    </th>
+                    <th className="text-center align-top header-color">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {data.length > 0 ? (
+                    data.slice(startIndex, endIndex).map((item, idxInPage) => {
+                      const globalIndex = startIndex + idxInPage;
+                      const order = globalIndex + 1;
+                      const rowKey =
+                        item.tenantId ??
+                        item.id ??
+                        `${item.firstName}-${item.room}-${globalIndex}`;
+
+                      return (
+                        <tr key={rowKey}>
+                          {/* Order */}
+                          <td className="align-top text-center">{order}</td>
+                          <td className="align-top text-center">
+                            {item.firstName}
+                          </td>
+                          <td className="align-top text-start">
+                            {item.lastName}
+                          </td>
+                          <td className="align-top text-center">
+                            {item.floor ?? "-"}
+                          </td>
+                          <td className="align-top text-center">
+                            {item.room ?? "-"}
+                          </td>
+
+                          <td className="align-top text-start">
+                            <span
+                              className="badge rounded-pill px-3"
+                              style={{
+                                backgroundColor: packageColor(
+                                  packageLabel(item.packageId)
+                                ),
+                                color: "#fff", // ✅ ตัวหนังสือขาว
+                              }}
+                            >
+                              {packageLabel(item.packageId)}
+                            </span>
+                          </td>
+
+                          <td className="align-top text-start">
+                            {formatDate(item.startDate)}
+                          </td>
+                          <td className="align-top text-start">
+                            {formatDate(item.endDate)}
+                          </td>
+                          <td className="align-top text-start">
+                            {item.phoneNumber || "-"}
+                          </td>
+
+                          <td className="align-top text-center">
+                            <button
+                              className="btn btn-sm form-Button-Edit"
+                              onClick={() => handleViewTenant(item)}
+                              aria-label="View"
+                            >
+                              <i className="bi bi-eye-fill"></i>
+                            </button>
+                            <button
+                              className="btn btn-sm form-Button-Edit"
+                              onClick={() => handleEdit(item)}
+                              aria-label="Edit"
+                            >
+                              <i className="bi bi-file-earmark-pdf-fill"></i>
+                            </button>
+                            <button
+                              className="btn btn-sm form-Button-Del"
+                              onClick={() => handleDelete(item.tenantId)}
+                              aria-label="Delete"
+                            >
+                              <i className="bi bi-trash-fill"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="10" className="text-center">
+                        Data Not Found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              totalRecords={totalRecords}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          </div>
+          {/* /Main */}
+        </div>
+      </div>
+
+      <Modal
+        id="exampleModal"
+        title="Add User"
+        icon="bi bi-person-plus"
+        size="modal-lg"
+        scrollable="modal-dialog-scrollable"
+      >
+        <p>Form ใส่เนื้อหา</p>
+      </Modal>
+    </Layout>
   );
 }
 

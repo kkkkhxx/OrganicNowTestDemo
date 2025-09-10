@@ -34,39 +34,9 @@
   border-collapse: collapse;
   border-radius: 10px;
   margin: 0;
-  /* ❌ ไม่ต้องใส่ overflow เพราะตารางไม่ได้ scroll เอง */
 }
 
-/* Header & Cell */
-.table th,
-.table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  word-wrap: break-word;
-  width: 12.5%;
-  min-width: 100px;
-  vertical-align: middle;
-}
 
-/* Checkbox cell */
-.checkbox-cell {
-  padding: 18px !important;
-  width: 1px !important;
-  min-width: 40px !important;
-  max-width: 100px !important;
-  text-align: center;
-  white-space: nowrap;
-  border: none;
-}
-
-.checkbox-cell input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  padding: 0;
-  display: block;
-}
 
 /* Header styling */
 .table th.header-color {
