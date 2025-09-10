@@ -165,7 +165,7 @@ function RoomDetail() {
           <div className="col-lg-11 p-4">
             {/* Toolbar Card */}
             <div className="toolbar-wrapper card border-0 bg-white">
-              <div className="card-header bg-white border-0">
+              <div className="card-header bg-white border-0 rounded-2">
                 <div className="tm-toolbar d-flex justify-content-between align-items-center">
                   {/* Breadcrumb */}
                   <div className="d-flex align-items-center gap-2">
@@ -198,11 +198,11 @@ function RoomDetail() {
               </div>
             </div>
 
-            <div className="table-wrapper-detail">
+            <div className="table-wrapper-detail rounded-0">
               <div className="row g-4">
                 {/* Room Info */}
                 <div className="col-lg-4">
-                  <div className="card border-0 shadow-sm">
+                  <div className="card border-0 shadow-sm rounded-2">
                     <div className="card-body">
                       <h5 className="card-title">Room Information</h5>
 
@@ -227,7 +227,7 @@ function RoomDetail() {
                     </div>
                   </div>
 
-                  <div className="card border-0 shadow-sm mt-3">
+                  <div className="card border-0 shadow-sm mt-3 rounded-2">
                     <div className="card-body">
                       <h5 className="card-title">Current Tenant</h5>
                       <p>
@@ -266,7 +266,7 @@ function RoomDetail() {
 
                 {/* Assets & Requests */}
                 <div className="col-lg-8 d-flex flex-column">
-                  <div className="card border-0 shadow-sm flex-grow-1" style={{ overflowY: "auto", paddingRight: "8px" }}>
+                  <div className="card border-0 shadow-sm flex-grow-1 rounded-2" style={{ overflowY: "auto", paddingRight: "8px" }}>
                     <div className="card-body d-flex flex-column overflow-hidden">
                       {/* Tabs */}
                       <ul className="nav nav-tabs bg-white" id="historyTabs" role="tablist">
@@ -285,29 +285,30 @@ function RoomDetail() {
                       {/* Content */}
                       <div className="tab-content mt-3 overflow-auto flex-grow-1" style={{ maxHeight: "500px" }}>
                         {/* Assets */}
-                        <div className="tab-pane fade show active" id="payment" role="tabpanel">
+                        <div className="tab-pane fade show active rounded-2" id="payment" role="tabpanel">
                           <table className="table text-nowrap">
                             <thead>
                               <tr>
-                                <th className="text-center header-color checkbox-cell">
-                                  <input
-                                    type="checkbox"
-                                    checked={isAllSelected}
-                                    onChange={handleSelectAll}
-                                    aria-label="Select all rows"
-                                  />
-                                </th>
+                                {/*<th className="text-center header-color checkbox-cell">*/}
+                                {/*  <input*/}
+                                {/*    type="checkbox"*/}
+                                {/*    checked={isAllSelected}*/}
+                                {/*    onChange={handleSelectAll}*/}
+                                {/*    aria-label="Select all rows"*/}
+                                {/*  />*/}
+                                {/*</th>*/}
                                 <th className="text-center align-middle header-color">Order</th>
                                 <th className="text-center align-middle header-color">RID</th>
                                 <th className="text-center align-middle header-color">Assets</th>
                                 <th className="text-center align-middle header-color">Status</th>
-                                <th className="text-center align-middle header-color">
-                                  <div className="btn-container">
-                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editRoomModal">
-                                      <i className="bi bi-pencil me-1" /> Add
-                                    </button>
-                                  </div>
-                                </th>
+                                  <th className="text-center align-middle header-color">Action</th>
+                                {/*<th className="text-center align-middle header-color">*/}
+                                {/*  <div className="btn-container">*/}
+                                {/*    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editRoomModal">*/}
+                                {/*      <i className="bi bi-pencil me-1" /> Add*/}
+                                {/*    </button>*/}
+                                {/*  </div>*/}
+                                {/*</th>*/}
                               </tr>
                             </thead>
 
@@ -315,14 +316,14 @@ function RoomDetail() {
                               {data.length > 0 ? (
                                 data.map((item, idx) => (
                                   <tr key={idx}>
-                                    <td className="align-middle text-center checkbox-cell">
-                                      <input
-                                        type="checkbox"
-                                        checked={selectedItems.includes(idx)}
-                                        onChange={() => handleSelectRow(idx)}
-                                        aria-label={`Select row ${idx + 1}`}
-                                      />
-                                    </td>
+                                    {/*<td className="align-middle text-center checkbox-cell">*/}
+                                    {/*  <input*/}
+                                    {/*    type="checkbox"*/}
+                                    {/*    checked={selectedItems.includes(idx)}*/}
+                                    {/*    onChange={() => handleSelectRow(idx)}*/}
+                                    {/*    aria-label={`Select row ${idx + 1}`}*/}
+                                    {/*  />*/}
+                                    {/*</td>*/}
 
                                     <td className="align-middle text-center">{item.order}</td>
                                     <td className="align-middle text-center">{item.RID || rid || "-"}</td>

@@ -28,6 +28,13 @@ function InvoiceManagement() {
         setCurrentPage(1);
     };
 
+    // ==== ใส่ไว้ด้านบนไฟล์ (นอก component) หรือภายใน component ก็ได้ ====
+    const roomsByFloor = {
+        "1": ["101", "102", "103", "104"],
+        "2": ["201", "202", "205", "206"],
+        "3": ["301", "302", "303"],
+    };
+
     const [data, setData] = useState([
         {
             id: 1,
@@ -49,8 +56,8 @@ function InvoiceManagement() {
             waterUnit: 4,
             electricity: 1236,
             electricityUnit: 206,
-            status: "Complete",
-            payDate: "2025-01-31",
+            status: "pending",
+            payDate: "",
             penalty: 1,
             penaltyDate: null
         },
@@ -206,12 +213,47 @@ function InvoiceManagement() {
         elecRate: 8,     // ค่าเริ่มต้น: ไฟ 8 บาท/หน่วย (แก้ได้)
 
         rent: "",
-        status: "Incomplete",
+        status: "pending",
 
         waterBill: 0,    // auto
         elecBill: 0,     // auto
         net: 0,          // auto
     });
+
+    // ===== สร้างตัวเลือกห้องตามชั้นที่เลือก =====
+    const roomOptions = React.useMemo(() => {
+        if (!invForm.floor) return [];
+        return roomsByFloor[invForm.floor] ?? [];
+    }, [invForm.floor]);
+
+    // ===== ถ้าเปลี่ยนชั้น แล้วห้องเดิมไม่อยู่ในตัวเลือก ให้รีเซ็ตห้อง =====
+    React.useEffect(() => {
+        if (!invForm.floor) {
+            // ยังไม่เลือกชั้น ให้เคลียร์ห้อง
+            if (invForm.room !== "") {
+                setInvForm((p) => ({ ...p, room: "" }));
+            }
+            return;
+        }
+        if (invForm.room && !roomOptions.includes(invForm.room)) {
+            setInvForm((p) => ({ ...p, room: "" }));
+        }
+    }, [invForm.floor, roomOptions]); // ใช้ roomOptions เพื่อตรวจว่าห้องมีในชั้นนั้นจริง
+
+    // ===== คำนวณอัตโนมัติเมื่อ unit / rate / rent เปลี่ยน (โค้ดเดิม) =====
+    React.useEffect(() => {
+        const wUnit = Number(invForm.waterUnit) || 0;
+        const eUnit = Number(invForm.elecUnit) || 0;
+        const wRate = Number(invForm.waterRate) || 0;
+        const eRate = Number(invForm.elecRate) || 0;
+        const rent  = Number(invForm.rent) || 0;
+
+        const waterBill = wUnit * wRate;
+        const elecBill  = eUnit * eRate;
+        const net = rent + waterBill + elecBill;
+
+        setInvForm((p) => ({ ...p, waterBill, elecBill, net }));
+    }, [invForm.waterUnit, invForm.elecUnit, invForm.waterRate, invForm.elecRate, invForm.rent]);
 
 // ===== คำนวณอัตโนมัติเมื่อ unit / rate / rent เปลี่ยน =====
     React.useEffect(() => {
@@ -271,6 +313,7 @@ function InvoiceManagement() {
 
         return rows;
     }, [data, filters, search]);
+
 
     return (
         <Layout title="Invoice Management" icon="bi bi-currency-dollar" notifications={3}>
@@ -461,10 +504,14 @@ function InvoiceManagement() {
                                         <select
                                             className="form-select"
                                             value={invForm.floor}
-                                            onChange={(e) => setInvForm((p) => ({ ...p, floor: e.target.value }))}
+                                            onChange={(e) =>
+                                                setInvForm((p) => ({ ...p, floor: e.target.value }))
+                                            }
                                         >
                                             <option value="" hidden>Select Floor</option>
-                                            <option>1</option><option>2</option><option>3</option>
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
                                         </select>
                                     </div>
                                 </div>
@@ -475,10 +522,19 @@ function InvoiceManagement() {
                                         <select
                                             className="form-select"
                                             value={invForm.room}
-                                            onChange={(e) => setInvForm((p) => ({ ...p, room: e.target.value }))}
+                                            onChange={(e) =>
+                                                setInvForm((p) => ({ ...p, room: e.target.value }))
+                                            }
+                                            disabled={!invForm.floor} // ต้องเลือกชั้นก่อน
                                         >
-                                            <option value="" hidden>Select Room</option>
-                                            <option>101</option><option>205</option><option>301</option>
+                                            <option value="" hidden>
+                                                {invForm.floor ? "Select Room" : "Select Floor first"}
+                                            </option>
+                                            {roomOptions.map((rm) => (
+                                                <option key={rm} value={rm}>
+                                                    {rm}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
@@ -487,7 +543,6 @@ function InvoiceManagement() {
                     </div>
 
                     <hr className="my-4" />
-
                     {/* ===== Invoice Information ===== */}
                     <div className="row g-3 align-items-start">
                         <div className="col-md-3">

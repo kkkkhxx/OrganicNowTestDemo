@@ -251,7 +251,7 @@ function MaintenanceRequest() {
   };
 
   return (
-    <Layout title="Maintenance Request" icon="bi bi-wrench-adjustable" notifications={3}>
+    <Layout title="Maintenance Request" icon="pi pi-wrench" notifications={3}>
       <div className="container-fluid">
         <div className="row min-vh-100">
           {/* Main */}
@@ -281,9 +281,6 @@ function MaintenanceRequest() {
                     </div>
                   </div>
                   <div className="d-flex align-items-center gap-2">
-                    <button className="btn btn-outline-light text-danger border-0">
-                      <i className="bi bi-trash" />
-                    </button>
                     <button
                       type="button"
                       className="btn btn-primary"
@@ -375,7 +372,7 @@ function MaintenanceRequest() {
             <Modal
               id="requestModal"
               title="Repair Add"
-              icon="bi bi-tools"
+              icon="pi pi-wrench"
               size="modal-xl"
               scrollable="modal-dialog-scrollable"
             >
@@ -476,7 +473,6 @@ function MaintenanceRequest() {
                             value={form.requestDate}
                             onChange={onFormChange}
                           />
-                          <span className="input-group-text"><i className="bi bi-calendar-event" /></span>
                         </div>
                       </div>
 
@@ -490,7 +486,6 @@ function MaintenanceRequest() {
                             value={form.maintainDate}
                             onChange={onFormChange}
                           />
-                          <span className="input-group-text"><i className="bi bi-calendar-event" /></span>
                         </div>
                       </div>
 
