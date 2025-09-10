@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Layout from "../component/layout";
@@ -227,7 +226,6 @@ function MaintenanceRequest() {
     });
   };
 
-
   const MaintainTypePill = ({ type }) => {
     const isFix = type.toLowerCase() === "fix";
     const isShift = type.toLowerCase() === "shift";
@@ -258,7 +256,6 @@ function MaintenanceRequest() {
         <div className="row min-vh-100">
           {/* Main */}
           <div className="col-lg-11 p-4">
-
             {/* Toolbar */}
             <div className="toolbar-wrapper card border-0 bg-white">
               <div className="card-header bg-white border-0">
@@ -278,6 +275,8 @@ function MaintenanceRequest() {
                         type="text"
                         className="form-control border-start-0"
                         placeholder="Search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                       />
                     </div>
                   </div>
@@ -305,9 +304,7 @@ function MaintenanceRequest() {
                   <table className="table text-nowrap align-middle tm-left mb-0">
                     <thead className="header-color">
                       <tr>
-                        <th className="checkbox-cell">
-                          <input type="checkbox" checked={isAllSelected} onChange={toggleAll} />
-                        </th>
+                        <th>Order</th>
                         <th>Room</th>
                         <th>Floor</th>
                         <th>Target</th>
@@ -323,16 +320,9 @@ function MaintenanceRequest() {
 
                     <tbody>
                       {filteredRows.length ? (
-                        filteredRows.map((row) => (
+                        filteredRows.map((row, index) => (
                           <tr key={row.id}>
-                            <td className="checkbox-cell">
-                              <input
-                                type="checkbox"
-                                checked={selected.includes(row.id)}
-                                onChange={() => toggleRow(row.id)}
-                              />
-                            </td>
-
+                            <td>{index + 1}</td> {/* Display index + 1 for Order */}
                             <td>{row.room}</td>
                             <td>{row.floor}</td>
                             <td>{row.target}</td>
