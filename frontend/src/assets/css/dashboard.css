@@ -13,3 +13,15 @@
 .status-card.in-process {
   border-left-color: #ffc107;
 }
+.room-box {
+  width: 85px;          /* กล่องใหญ่ขึ้น */
+  height: 85px;         /* ทำให้เป็นจัตุรัส */
+  font-size: 20px;      /* ตัวเลขใหญ่ขึ้น */
+  transition: transform 0.2s ease, filter 0.2s ease;
+  cursor: pointer;
+}
+
+.room-box:hover {
+  transform: scale(1.08);   /* ขยายขึ้นเล็กน้อยเวลา hover */
+  filter: brightness(1.1);  /* ทำให้สีสว่างขึ้น */
+}
