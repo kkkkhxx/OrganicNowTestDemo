@@ -28,6 +28,13 @@ function InvoiceManagement() {
         setCurrentPage(1);
     };
 
+    // ==== ใส่ไว้ด้านบนไฟล์ (นอก component) หรือภายใน component ก็ได้ ====
+    const roomsByFloor = {
+        "1": ["101", "102", "103", "104"],
+        "2": ["201", "202", "205", "206"],
+        "3": ["301", "302", "303"],
+    };
+
     const [data, setData] = useState([
         {
             id: 1,
@@ -49,8 +56,8 @@ function InvoiceManagement() {
             waterUnit: 4,
             electricity: 1236,
             electricityUnit: 206,
-            status: "Complete",
-            payDate: "2025-01-31",
+            status: "pending",
+            payDate: "",
             penalty: 1,
             penaltyDate: null
         },
@@ -194,6 +201,120 @@ function InvoiceManagement() {
 
     const isAllSelected = data.length > 0 && selectedItems.length === data.length;
 
+    // ===== INVOICE FORM STATE (สำหรับ Modal) =====
+    const [invForm, setInvForm] = useState({
+        floor: "",
+        room: "",
+        createDate: new Date().toISOString().slice(0, 10),
+
+        waterUnit: "",
+        elecUnit: "",
+        waterRate: 30,   // ค่าเริ่มต้น: น้ำ 30 บาท/หน่วย (แก้ได้)
+        elecRate: 8,     // ค่าเริ่มต้น: ไฟ 8 บาท/หน่วย (แก้ได้)
+
+        rent: "",
+        status: "pending",
+
+        waterBill: 0,    // auto
+        elecBill: 0,     // auto
+        net: 0,          // auto
+    });
+
+    // ===== สร้างตัวเลือกห้องตามชั้นที่เลือก =====
+    const roomOptions = React.useMemo(() => {
+        if (!invForm.floor) return [];
+        return roomsByFloor[invForm.floor] ?? [];
+    }, [invForm.floor]);
+
+    // ===== ถ้าเปลี่ยนชั้น แล้วห้องเดิมไม่อยู่ในตัวเลือก ให้รีเซ็ตห้อง =====
+    React.useEffect(() => {
+        if (!invForm.floor) {
+            // ยังไม่เลือกชั้น ให้เคลียร์ห้อง
+            if (invForm.room !== "") {
+                setInvForm((p) => ({ ...p, room: "" }));
+            }
+            return;
+        }
+        if (invForm.room && !roomOptions.includes(invForm.room)) {
+            setInvForm((p) => ({ ...p, room: "" }));
+        }
+    }, [invForm.floor, roomOptions]); // ใช้ roomOptions เพื่อตรวจว่าห้องมีในชั้นนั้นจริง
+
+    // ===== คำนวณอัตโนมัติเมื่อ unit / rate / rent เปลี่ยน (โค้ดเดิม) =====
+    React.useEffect(() => {
+        const wUnit = Number(invForm.waterUnit) || 0;
+        const eUnit = Number(invForm.elecUnit) || 0;
+        const wRate = Number(invForm.waterRate) || 0;
+        const eRate = Number(invForm.elecRate) || 0;
+        const rent  = Number(invForm.rent) || 0;
+
+        const waterBill = wUnit * wRate;
+        const elecBill  = eUnit * eRate;
+        const net = rent + waterBill + elecBill;
+
+        setInvForm((p) => ({ ...p, waterBill, elecBill, net }));
+    }, [invForm.waterUnit, invForm.elecUnit, invForm.waterRate, invForm.elecRate, invForm.rent]);
+
+// ===== คำนวณอัตโนมัติเมื่อ unit / rate / rent เปลี่ยน =====
+    React.useEffect(() => {
+        const wUnit = Number(invForm.waterUnit) || 0;
+        const eUnit = Number(invForm.elecUnit) || 0;
+        const wRate = Number(invForm.waterRate) || 0;
+        const eRate = Number(invForm.elecRate) || 0;
+        const rent  = Number(invForm.rent) || 0;
+
+        const waterBill = wUnit * wRate;
+        const elecBill  = eUnit * eRate;
+        const net = rent + waterBill + elecBill;
+
+        setInvForm((p) => ({ ...p, waterBill, elecBill, net }));
+    }, [invForm.waterUnit, invForm.elecUnit, invForm.waterRate, invForm.elecRate, invForm.rent]);
+
+    // ====== FILTER & SEARCH STATE ======
+    const [filters, setFilters] = useState({
+        status: "ALL",
+        payFrom: "",
+        payTo: "",
+        floor: "",
+        room: "",
+        amountMin: "",
+        amountMax: "",
+    });
+    const clearFilters = () =>
+        setFilters({ status: "ALL", payFrom: "", payTo: "", floor: "", room: "", amountMin: "", amountMax: "" });
+
+    const [search, setSearch] = useState("");
+
+    // ====== FILTERED VIEW ======
+    const filtered = React.useMemo(() => {
+        const q = search.trim().toLowerCase();
+        let rows = [...data];
+
+        rows = rows.filter((r) => {
+            if (filters.status !== "ALL" && r.status !== filters.status) return false;
+            if (filters.payFrom && r.payDate && r.payDate < filters.payFrom) return false;
+            if (filters.payTo && r.payDate && r.payDate > filters.payTo) return false;
+            if (filters.floor && String(r.floor) !== String(filters.floor)) return false;
+            if (filters.room && String(r.room) !== String(filters.room)) return false;
+            if (filters.amountMin !== "" && r.amount < Number(filters.amountMin)) return false;
+            if (filters.amountMax !== "" && r.amount > Number(filters.amountMax)) return false;
+            return true;
+        });
+
+        if (q) {
+            rows = rows.filter((r) =>
+                `${r.firstName} ${r.lastName}`.toLowerCase().includes(q) ||
+                String(r.room).includes(q) ||
+                String(r.floor).includes(q) ||
+                r.createDate.includes(q) ||
+                r.status.toLowerCase().includes(q)
+            );
+        }
+
+        return rows;
+    }, [data, filters, search]);
+
+
     return (
         <Layout title="Invoice Management" icon="bi bi-currency-dollar" notifications={3}>
             <div className="container-fluid">
@@ -202,12 +323,12 @@ function InvoiceManagement() {
                     <div className="col-lg-11 p-4">
                         {/* Toolbar Card */}
                         <div className="toolbar-wrapper card border-0 bg-white">
-                            <div className="card-header bg-white border-0">
+                            <div className="card-header bg-white border-0 rounded-3">
                                 <div className="tm-toolbar d-flex justify-content-between align-items-center">
                                     {/* Left cluster: Filter / Sort / Search */}
                                     <div className="d-flex align-items-center gap-3">
-                                        <button className="btn btn-link tm-link p-0">
-                                            <i className="bi bi-filter me-1"></i> Filter
+                                        <button className="btn btn-link tm-link p-0" data-bs-toggle="offcanvas" data-bs-target="#invoiceFilterCanvas">
+                                        <i className="bi bi-filter me-1"></i> Filter
                                         </button>
 
                                         <button className="btn btn-link tm-link p-0">
@@ -222,6 +343,8 @@ function InvoiceManagement() {
                                                 type="text"
                                                 className="form-control border-start-0"
                                                 placeholder="Search invoices..."
+                                                value={search}
+                                                onChange={(e) => setSearch(e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -273,8 +396,8 @@ function InvoiceManagement() {
                                 </thead>
 
                                 <tbody>
-                                    {data.length > 0 ? (
-                                        data.map((item, idx) => (
+                                    {filtered.length > 0 ? (
+                                        filtered.map((item, idx) => (
                                             <tr key={idx}>
                                                 <td className="align-middle text-center checkbox-cell">
                                                     <input
@@ -288,10 +411,10 @@ function InvoiceManagement() {
                                                 <td className="align-middle text-start">{item.firstName}</td>
                                                 <td className="align-middle text-start">{item.floor}</td>
                                                 <td className="align-middle text-start">{item.room}</td>
-                                                <td className="align-middle text-start">    {item.amount.toLocaleString()}</td>
-                                                <td className="align-middle text-start">    {item.rent.toLocaleString()}</td>
-                                                <td className="align-middle text-start">    {item.water.toLocaleString()}</td>
-                                                <td className="align-middle text-start">    {item.electricity.toLocaleString()}</td>
+                                                <td className="align-middle text-start">{item.amount.toLocaleString()}</td>
+                                                <td className="align-middle text-start">{item.rent.toLocaleString()}</td>
+                                                <td className="align-middle text-start">{item.water.toLocaleString()}</td>
+                                                <td className="align-middle text-start">{item.electricity.toLocaleString()}</td>
                                                 <td className="align-middle text-start">
                                                     <span className="badge bg-success">
                                                         <i className="bi bi-circle-fill me-1"></i>
@@ -350,16 +473,291 @@ function InvoiceManagement() {
                     </div>
                 </div>
             </div>
-            
+
             <Modal
                 id="createInvoiceModal"
-                title="Create Invoice"
+                title="Invoice add"
                 icon="bi bi-receipt-cutoff"
                 size="modal-lg"
                 scrollable="modal-dialog-scrollable"
             >
-                <p>Invoice creation form will go here</p>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        // TODO: push invForm ไปยัง data ถ้าต้องการบันทึกจริง
+                        const el = document.getElementById("createInvoiceModal");
+                        const modal = window.bootstrap?.Modal.getOrCreateInstance(el);
+                        modal?.hide();
+                    }}
+                >
+                    {/* ===== Room Information ===== */}
+                    <div className="row g-3 align-items-start">
+                        <div className="col-md-3">
+                            <strong>Room Information</strong>
+                        </div>
+
+                        <div className="col-md-9">
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <label className="form-label">Floor</label>
+                                    <div className="input-group">
+                                        <select
+                                            className="form-select"
+                                            value={invForm.floor}
+                                            onChange={(e) =>
+                                                setInvForm((p) => ({ ...p, floor: e.target.value }))
+                                            }
+                                        >
+                                            <option value="" hidden>Select Floor</option>
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <label className="form-label">Room</label>
+                                    <div className="input-group">
+                                        <select
+                                            className="form-select"
+                                            value={invForm.room}
+                                            onChange={(e) =>
+                                                setInvForm((p) => ({ ...p, room: e.target.value }))
+                                            }
+                                            disabled={!invForm.floor} // ต้องเลือกชั้นก่อน
+                                        >
+                                            <option value="" hidden>
+                                                {invForm.floor ? "Select Room" : "Select Floor first"}
+                                            </option>
+                                            {roomOptions.map((rm) => (
+                                                <option key={rm} value={rm}>
+                                                    {rm}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr className="my-4" />
+                    {/* ===== Invoice Information ===== */}
+                    <div className="row g-3 align-items-start">
+                        <div className="col-md-3">
+                            <strong>Invoice Information</strong>
+                        </div>
+
+                        <div className="col-md-9">
+                            <div className="row g-3">
+                                {/* แถว 1: Create date + Rent */}
+                                <div className="col-md-6">
+                                    <label className="form-label">Create date</label>
+                                    <input
+                                        type="date"
+                                        className="form-control"
+                                        value={invForm.createDate}
+                                        disabled
+                                    />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Rent</label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        placeholder="Rent"
+                                        min={0}
+                                        value={invForm.rent}
+                                        onChange={(e) => setInvForm((p) => ({ ...p, rent: e.target.value }))}
+                                    />
+                                </div>
+
+                                {/* แถว 2: Water */}
+                                <div className="col-md-6">
+                                    <label className="form-label">Water unit</label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        placeholder="Add Water unit"
+                                        min={0}
+                                        value={invForm.waterUnit}
+                                        onChange={(e) => setInvForm((p) => ({ ...p, waterUnit: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Water bill</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={invForm.waterBill.toLocaleString()}
+                                        disabled
+                                    />
+                                </div>
+
+                                {/* แถว 3: Electricity */}
+                                <div className="col-md-6">
+                                    <label className="form-label">Electricity unit</label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        placeholder="Add Electricity unit"
+                                        min={0}
+                                        value={invForm.elecUnit}
+                                        onChange={(e) => setInvForm((p) => ({ ...p, elecUnit: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Electricity bill</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={invForm.elecBill.toLocaleString()}
+                                        disabled
+                                    />
+                                </div>
+
+                                {/* แถว 4: NET + Status */}
+                                <div className="col-md-6">
+                                    <label className="form-label">NET</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={invForm.net.toLocaleString()}
+                                        disabled
+                                    />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Status</label>
+                                    <select
+                                        className="form-select"
+                                        value={invForm.status}
+                                        onChange={(e) => setInvForm((p) => ({ ...p, status: e.target.value }))}
+                                    >
+                                        <option>Incomplete</option>
+                                        <option>Complete</option>
+                                        <option>Pending</option>
+                                        <option>Overdue</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ===== Footer buttons ===== */}
+                    <div className="d-flex justify-content-center gap-3 pt-4 pb-2">
+                        <button type="button" className="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary">
+                            Save
+                        </button>
+                    </div>
+                </form>
             </Modal>
+
+            <div
+                className="offcanvas offcanvas-end"
+                tabIndex="-1"
+                id="invoiceFilterCanvas"
+                aria-labelledby="invoiceFilterCanvasLabel"
+            >
+                <div className="offcanvas-header">
+                    <h5 id="invoiceFilterCanvasLabel" className="mb-0">
+                        <i className="bi bi-filter me-2"></i>Filters
+                    </h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+
+                <div className="offcanvas-body">
+                    <div className="row g-3">
+                        <div className="col-12">
+                            <label className="form-label">Status</label>
+                            <select
+                                className="form-select"
+                                value={filters.status}
+                                onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
+                            >
+                                <option value="ALL">All</option>
+                                <option value="Complete">Complete</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Overdue">Overdue</option>
+                            </select>
+                        </div>
+
+                        <div className="col-md-6">
+                            <label className="form-label">Pay date from</label>
+                            <input
+                                type="date"
+                                className="form-control"
+                                value={filters.payFrom}
+                                onChange={(e) => setFilters((f) => ({ ...f, payFrom: e.target.value }))}
+                            />
+                        </div>
+                        <div className="col-md-6">
+                            <label className="form-label">Pay date to</label>
+                            <input
+                                type="date"
+                                className="form-control"
+                                value={filters.payTo}
+                                onChange={(e) => setFilters((f) => ({ ...f, payTo: e.target.value }))}
+                            />
+                        </div>
+
+                        <div className="col-md-6">
+                            <label className="form-label">Floor</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={filters.floor}
+                                onChange={(e) => setFilters((f) => ({ ...f, floor: e.target.value }))}
+                                placeholder="e.g. 2"
+                            />
+                        </div>
+                        <div className="col-md-6">
+                            <label className="form-label">Room</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={filters.room}
+                                onChange={(e) => setFilters((f) => ({ ...f, room: e.target.value }))}
+                                placeholder="e.g. 205"
+                            />
+                        </div>
+
+                        <div className="col-md-6">
+                            <label className="form-label">Amount min</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                value={filters.amountMin}
+                                onChange={(e) => setFilters((f) => ({ ...f, amountMin: e.target.value }))}
+                                placeholder="e.g. 4000"
+                            />
+                        </div>
+                        <div className="col-md-6">
+                            <label className="form-label">Amount max</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                value={filters.amountMax}
+                                onChange={(e) => setFilters((f) => ({ ...f, amountMax: e.target.value }))}
+                                placeholder="e.g. 6000"
+                            />
+                        </div>
+
+                        <div className="col-12 d-flex justify-content-between mt-2">
+                            <button className="btn btn-outline-secondary" onClick={clearFilters}>
+                                Clear
+                            </button>
+                            <button className="btn btn-primary" data-bs-dismiss="offcanvas">
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </Layout>
     );
 }

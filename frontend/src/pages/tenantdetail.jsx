@@ -68,7 +68,7 @@ function TenantDetail() {
           <div className="col-lg-11 p-4">
             {/* Toolbar Card */}
             <div className="toolbar-wrapper card border-0 bg-white">
-              <div className="card-header bg-white border-0">
+              <div className="card-header bg-white border-0 rounded-3">
                 <div className="tm-toolbar d-flex justify-content-between align-items-center">
                   {/* Left cluster: Breadcrumb (แทน Filter/Sort/Search เดิม) */}
                   <div className="d-flex align-items-center gap-2">
@@ -102,12 +102,12 @@ function TenantDetail() {
               </div>
             </div>
 
-            <div className="table-wrapper-detail">
+            <div className="table-wrapper-detail rounded-0">
               {/* code here */}
               <div className="row g-4">
                 {/* Tenant Info */}
                 <div className="col-lg-4" ref={tenantInfoRef}>
-                  <div className="card border-0 shadow-sm">
+                  <div className="card border-0 shadow-sm rounded-2">
                     <div className="card-body">
                       <h5 className="card-title">Tenant Information</h5>
 
@@ -154,7 +154,7 @@ function TenantDetail() {
                     </div>
                   </div>
 
-                  <div className="card border-0 shadow-sm mt-3">
+                  <div className="card border-0 shadow-sm mt-3 rounded-2">
                     <div className="card-body">
                       <h5 className="card-title">Room Information</h5>
                       <p>
@@ -172,7 +172,7 @@ function TenantDetail() {
                 {/* Payment & Request History */}
                 <div className="col-lg-8 d-flex flex-column">
                   <div
-                    className="card border-0 shadow-sm flex-grow-1"
+                    className="card border-0 shadow-sm flex-grow-1 rounded-2"
                     style={{
                       height: `${leftHeight}px`,
                       overflowY: "auto",

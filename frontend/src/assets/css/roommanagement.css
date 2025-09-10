@@ -1,0 +1,224 @@
+/* Center the content in table header and cells */
+.table th,
+.table td {
+  padding: 12px;
+  text-align: center !important; /* Center text */
+  border-bottom: 1px solid #ddd;
+  word-wrap: break-word;
+  min-width: 100px;
+  vertical-align: middle;
+}
+
+/* ✅ Left-alignment enforced for table with tm-left class */
+.table.tm-left th,
+.table.tm-left td {
+  text-align: left !important;
+  vertical-align: middle;
+}
+
+/* Adjust checkbox cell alignment */
+.table.tm-left th.checkbox-cell,
+.table.tm-left td.checkbox-cell {
+  text-align: center !important;
+}
+
+.checkbox-cell {
+  padding: 18px !important;
+  width: 1px !important;
+  min-width: 40px !important;
+  max-width: 100px !important;
+  text-align: center !important;
+  white-space: nowrap;
+  border: none;
+}
+
+.checkbox-cell input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* Table header styling */
+.table th.header-color {
+  background-color: #0084f7;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Center header color and border radius */
+.table thead.header-color th {
+  background-color: #0084f7;
+  color: #fff;
+  font-weight: 700;
+}
+
+.table thead.header-color th:first-child {
+  border-top-left-radius: 10px;
+}
+
+.table thead.header-color th:last-child {
+  border-top-right-radius: 10px;
+}
+
+/* Card styling */
+.card {
+  border-radius: 12px;
+}
+
+/* Toolbar styling */
+.tm-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  gap: 16px;
+}
+
+.tm-search {
+  max-width: 280px;
+}
+
+.tm-toolbar button,
+.tm-toolbar .form-control {
+  white-space: nowrap;
+}
+
+/* Input group styling */
+.input-group .form-control {
+  box-shadow: none;
+}
+
+/* Button link styling */
+.btn-link {
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.tm-content-container {
+  margin-left: 80px;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 32px;
+  max-width: none;
+}
+
+/* Status card styling */
+.status-card {
+  border-radius: 12px;
+  padding: 16px;
+  color: #333;
+  font-size: 0.95rem;
+  background-color: #f8f9fa;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Status variations */
+.status-complete {
+  background-color: #d4f4dd;
+}
+
+.status-warning {
+  background-color: #fff8d4;
+}
+
+.status-danger {
+  background-color: #f8d4d4;
+}
+
+.status-default {
+  background-color: #f1f1f1;
+}
+
+.label {
+  color: #888;
+  font-weight: normal;
+}
+
+.value {
+  color: #000;
+  font-weight: bold;
+}
+
+/* Card body content layout */
+.card-body p {
+  display: grid;
+  grid-template-columns: 140px auto;
+  column-gap: 8px;
+  margin-bottom: 8px;
+}
+
+.package-row {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Badge styling */
+.package-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Remove outline/box-shadow for status buttons */
+.table.tm-left td .btn.btn-link {
+  line-height: 1;
+  box-shadow: none;
+}
+.table.tm-left td .btn.btn-link:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+/* Responsive for mobile */
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    padding: 8px;
+  }
+
+  .tm-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tm-search {
+    width: 100%;
+  }
+
+  .tm-toolbar > div {
+    width: 100%;
+  }
+}
+
+/* Request dot styles */
+.request-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.request-active {
+  background-color: #dc3545; /* Red */
+}
+
+.request-inactive {
+  background-color: #ccc; /* Gray */
+}
+/* Center the content in table header and cells */
+.table th,
+.table td {
+  padding: 12px;
+  text-align: center; /* Center text */
+  border-bottom: 1px solid #ddd;
+  word-wrap: break-word;
+  min-width: 120px; /* Ensure columns have equal width */
+  vertical-align: middle;
+}
+
+
