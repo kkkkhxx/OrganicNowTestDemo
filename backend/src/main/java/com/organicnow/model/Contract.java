@@ -1,4 +1,4 @@
-package com.organicnow.backend.model;
+package com.organicnow.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;

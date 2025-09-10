@@ -1,4 +1,4 @@
-package com.organicnow.backend.dto;
+package com.organicnow.dto;
 
 import lombok.*;
 import java.math.BigDecimal;

@@ -1,11 +1,11 @@
-package com.organicnow.backend.service;
+package com.organicnow.service;
 
-import com.organicnow.backend.dto.PackagePlanDto;
-import com.organicnow.backend.dto.PackagePlanRequestDto;
-import com.organicnow.backend.model.ContractType;
-import com.organicnow.backend.model.PackagePlan;
-import com.organicnow.backend.repository.ContractTypeRepository;
-import com.organicnow.backend.repository.PackagePlanRepository;
+import com.organicnow.dto.PackagePlanDto;
+import com.organicnow.dto.PackagePlanRequestDto;
+import com.organicnow.model.ContractType;
+import com.organicnow.model.PackagePlan;
+import com.organicnow.repository.ContractTypeRepository;
+import com.organicnow.repository.PackagePlanRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 

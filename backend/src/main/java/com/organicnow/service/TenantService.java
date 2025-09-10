@@ -1,7 +1,7 @@
-package com.organicnow.backend.service;
+package com.organicnow.service;
 
-import com.organicnow.backend.dto.TenantDto;
-import com.organicnow.backend.repository.ContractRepository;
+import com.organicnow.dto.TenantDto;
+import com.organicnow.repository.ContractRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

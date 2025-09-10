@@ -1,10 +1,10 @@
-package com.organicnow.backend.service;
+package com.organicnow.service;
 
-import com.organicnow.backend.dto.CreateTenantContractRequest;
-import com.organicnow.backend.dto.TenantDto;
-import com.organicnow.backend.dto.UpdateTenantContractRequest;
-import com.organicnow.backend.model.*;
-import com.organicnow.backend.repository.*;
+import com.organicnow.dto.CreateTenantContractRequest;
+import com.organicnow.dto.TenantDto;
+import com.organicnow.dto.UpdateTenantContractRequest;
+import com.organicnow.model.*;
+import com.organicnow.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

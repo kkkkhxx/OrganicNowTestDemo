@@ -1,4 +1,4 @@
-package com.organicnow.backend.dto;
+package com.organicnow.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

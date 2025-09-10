@@ -1,7 +1,7 @@
-package com.organicnow.backend.repository;
+package com.organicnow.repository;
 
-import com.organicnow.backend.model.PackagePlan;
-import com.organicnow.backend.model.ContractType;
+import com.organicnow.model.PackagePlan;
+import com.organicnow.model.ContractType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

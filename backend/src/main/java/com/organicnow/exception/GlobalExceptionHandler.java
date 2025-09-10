@@ -1,4 +1,4 @@
-package com.organicnow.backend.exception;
+package com.organicnow.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

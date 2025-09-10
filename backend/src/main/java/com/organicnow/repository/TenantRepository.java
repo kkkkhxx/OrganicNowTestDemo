@@ -1,6 +1,6 @@
-package com.organicnow.backend.repository;
+package com.organicnow.repository;
 
-import com.organicnow.backend.model.Tenant;
+import com.organicnow.model.Tenant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

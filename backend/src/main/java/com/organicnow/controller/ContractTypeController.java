@@ -1,7 +1,7 @@
-package com.organicnow.backend.controller;
+package com.organicnow.controller;
 
-import com.organicnow.backend.model.ContractType;
-import com.organicnow.backend.service.ContractTypeService;
+import com.organicnow.model.ContractType;
+import com.organicnow.service.ContractTypeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,7 +1,7 @@
-package com.organicnow.backend.controller;
+package com.organicnow.controller;
 
-import com.organicnow.backend.model.Room;
-import com.organicnow.backend.service.RoomService;
+import com.organicnow.model.Room;
+import com.organicnow.service.RoomService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;

@@ -1,7 +1,7 @@
-package com.organicnow.backend.repository;
+package com.organicnow.repository;
 
-import com.organicnow.backend.dto.TenantDto;
-import com.organicnow.backend.model.Contract;
+import com.organicnow.dto.TenantDto;
+import com.organicnow.model.Contract;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 public interface ContractRepository extends JpaRepository<Contract, Long> {
 
     @Query("""
-           select new com.organicnow.backend.dto.TenantDto(
+           select new com.organicnow.dto.TenantDto(
                c.id,
                t.firstName,
                t.lastName,

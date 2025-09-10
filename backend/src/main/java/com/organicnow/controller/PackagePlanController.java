@@ -1,8 +1,8 @@
-package com.organicnow.backend.controller;
+package com.organicnow.controller;
 
-import com.organicnow.backend.dto.PackagePlanDto;
-import com.organicnow.backend.dto.PackagePlanRequestDto;
-import com.organicnow.backend.service.PackagePlanService;
+import com.organicnow.dto.PackagePlanDto;
+import com.organicnow.dto.PackagePlanRequestDto;
+import com.organicnow.service.PackagePlanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/packages")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class PackagePlanController {
 
     private final PackagePlanService packagePlanService;

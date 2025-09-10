@@ -1,7 +1,7 @@
-package com.organicnow.backend.service;
+package com.organicnow.service;
 
-import com.organicnow.backend.model.ContractType;
-import com.organicnow.backend.repository.ContractTypeRepository;
+import com.organicnow.model.ContractType;
+import com.organicnow.repository.ContractTypeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 

@@ -1,7 +1,7 @@
-package com.organicnow.backend.service;
+package com.organicnow.service;
 
-import com.organicnow.backend.model.Room;
-import com.organicnow.backend.repository.RoomRepository;
+import com.organicnow.model.Room;
+import com.organicnow.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
