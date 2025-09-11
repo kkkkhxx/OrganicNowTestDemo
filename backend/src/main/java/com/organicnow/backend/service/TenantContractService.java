@@ -6,8 +6,6 @@ import com.organicnow.backend.dto.TenantDetailDto;
 import com.organicnow.backend.dto.UpdateTenantContractRequest;
 import com.organicnow.backend.model.*;
 import com.organicnow.backend.repository.*;
-import com.organicnow.backend.model.*;
-import com.organicnow.backend.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,6 +67,7 @@ public class TenantContractService {
                 .contractId(contract.getId())
                 .firstName(tenant.getFirstName())
                 .lastName(tenant.getLastName())
+                .email(tenant.getEmail())              // ✅ ใส่ email
                 .floor(room.getRoomFloor())
                 .room(room.getRoomNumber())
                 .packageId(plan.getId())
@@ -115,6 +114,7 @@ public class TenantContractService {
                 .contractId(saved.getId())
                 .firstName(saved.getTenant().getFirstName())
                 .lastName(saved.getTenant().getLastName())
+                .email(saved.getTenant().getEmail())  // ✅ ใส่ email
                 .floor(saved.getRoom().getRoomFloor())
                 .room(saved.getRoom().getRoomNumber())
                 .packageId(saved.getPackagePlan().getId())

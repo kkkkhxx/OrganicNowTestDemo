@@ -19,4 +19,5 @@ public class TenantDto {
     private LocalDateTime endDate;
 
     private String phoneNumber;
+    private String email;
 }
