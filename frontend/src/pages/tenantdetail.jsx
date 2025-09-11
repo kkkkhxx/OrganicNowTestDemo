@@ -60,8 +60,18 @@ function TenantDetail() {
     }
   };
 
+    //======= ปุ่มยกเลิกสัญญา =======//
+    const [endDate, setEndDate] = useState("");
+    // helper: คืนค่าวันนี้รูปแบบ YYYY-MM-DD
+    const todayISO = () => new Date().toISOString().slice(0, 10);
+    // ยกเลิกสัญญา -> เซ็ต End date เป็นวันนี้ (ยืนยันก่อน)
+    const handleCancelContract = () => {
+        if (!window.confirm("ยืนยันการยกเลิกสัญญา? ระบบจะตั้ง End date เป็นวันนี้")) return;
+        setEndDate(todayISO());
+    };
+
   return (
-    <Layout title="Tenant Management" icon="bi bi-people" notifications={3}>
+    <Layout title="Tenant Management" icon="pi pi-user" notifications={3}>
       <div className="container-fluid">
         <div className="row min-vh-100">
           {/* Main */}
@@ -298,12 +308,240 @@ function TenantDetail() {
       </div>
       <Modal
         id="exampleModal"
-        title="Add User"
-        icon="bi bi-person-plus"
+        title="Edit User"
+        icon="pi pi-user"
         size="modal-lg"
         scrollable="modal-dialog-scrollable"
       >
-        <p>Form ใส่เนื้อหา</p>
+          <form
+              onSubmit={(e) => {
+                  e.preventDefault();
+                  // ผูก Save กับฟังก์ชันเดิม
+                  handleSaveCreate();
+              }}
+          >
+              {/* ---------- General Information ---------- */}
+              <div className="mb-4">
+                  <div className="fw-semibold mb-2">General Information</div>
+
+                  <div className="row g-3">
+                      <div className="col-md-6">
+                          <label className="form-label">First Name</label>
+                          <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Tenant First Name"
+                              value={firstName}
+                              onChange={(e) => setFirstName(e.target.value)}
+                          />
+                      </div>
+                      <div className="col-md-6">
+                          <label className="form-label">Last Name</label>
+                          <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Tenant Last Name"
+                              value={lastName}
+                              onChange={(e) => setLastName(e.target.value)}
+                          />
+                      </div>
+
+                      <div className="col-md-6">
+                          <label className="form-label">National ID</label>
+                          <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Tenant National ID"
+                              disabled
+                              value={nationalId}
+                              onChange={(e) => setNationalId(e.target.value)}
+                          />
+                      </div>
+                      <div className="col-md-6">
+                          <label className="form-label">Phone Number</label>
+                          <input
+                              type="tel"
+                              className="form-control"
+                              placeholder="Tenant Phone Number"
+                              value={phoneNumber}
+                              onChange={(e) => setPhoneNumber(e.target.value)}
+                          />
+                      </div>
+
+                      <div className="col-md-6">
+                          <label className="form-label">Email</label>
+                          <input
+                              type="email"
+                              className="form-control"
+                              placeholder="Tenant Email"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                          />
+                      </div>
+                  </div>
+              </div>
+
+              {/* ---------- Room Information ---------- */}
+              <div className="mb-4">
+                  <div className="fw-semibold mb-2">Room Information</div>
+
+                  <div className="row g-3">
+                      <div className="col-md-6">
+                          <label className="form-label">Floor</label>
+                          <div className="position-relative">
+                              <select className="form-select"
+                                      disabled>
+                                  <option>1</option>
+                              </select>
+                              {/*<select*/}
+                              {/*    className="form-select"*/}
+                              {/*    value={selectedFloor}*/}
+                              {/*    onChange={(e) => onChangeFloor(e.target.value)}*/}
+                              {/*>*/}
+                              {/*    <option value="">Tenant Floor</option>*/}
+                              {/*    {floors.map((f) => (*/}
+                              {/*        <option key={f} value={f}>*/}
+                              {/*            {f}*/}
+                              {/*        </option>*/}
+                              {/*    ))}*/}
+                              {/*</select>*/}
+                          </div>
+                      </div>
+
+                      <div className="col-md-6">
+                          <label className="form-label">Room</label>
+                          <div className="position-relative">
+                              <select className="form-select"
+                                      disabled>
+                                  <option>101</option>
+                                  <option>102</option>
+                              </select>
+                              {/*<select*/}
+                              {/*    className="form-select"*/}
+                              {/*    value={selectedRoomId}*/}
+                              {/*    onChange={(e) => setSelectedRoomId(e.target.value)}*/}
+                              {/*    disabled={!selectedFloor}*/}
+                              {/*>*/}
+                              {/*    <option value="">*/}
+                              {/*        {selectedFloor ? "Tenant Room" : "Choose floor first"}*/}
+                              {/*    </option>*/}
+                              {/*    {roomsInSelectedFloor.map((r) => (*/}
+                              {/*        <option key={r.id} value={r.id}>*/}
+                              {/*            {r.name ?? r.room ?? r.id}*/}
+                              {/*        </option>*/}
+                              {/*    ))}*/}
+                              {/*</select>*/}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              {/* ---------- Contract Information ---------- */}
+              <div className="mb-4">
+                  <div className="fw-semibold mb-2">Contract Information</div>
+
+                  <div className="row g-3">
+                      <div className="col-md-6">
+                          <label className="form-label">Package</label>
+                          <div className="position-relative">
+                              <select
+                                  className="form-select"
+                                  disabled
+                                  value={packageId}
+                                  onChange={(e) => setPackageId(e.target.value)}
+                              >
+                                  <option value="">Tenant Package</option>
+                                  {packages.map((p) => (
+                                      <option key={p.id} value={p.id}>
+                                          {p.contract_name}
+                                      </option>
+                                  ))}
+                              </select>
+                          </div>
+                      </div>
+
+                      <div className="col-md-6">
+                          <label className="form-label">Sign date</label>
+                          <div className="position-relative">
+                              <input
+                                  type="date"
+                                  className="form-control"
+                                  placeholder="Tenant Sign date"
+                                  disabled
+                                  // value={startDate}
+                                  // onChange={(e) => setStartDate(e.target.value)}
+                              />
+                          </div>
+                      </div>
+
+                      <div className="col-md-6">
+                          <label className="form-label">Start date</label>
+                          <div className="position-relative">
+                              <input
+                                  type="date"
+                                  className="form-control"
+                                  placeholder="Tenant Start date"
+                                  disabled
+                                  value={startDate}
+                                  onChange={(e) => setStartDate(e.target.value)}
+                              />
+                          </div>
+                      </div>
+
+                      <div className="col-md-6">
+                          <label className="form-label">End date</label>
+                          <div className="input-group">
+                              <input
+                                  type="date"
+                                  className="form-control"
+                                  placeholder="Tenant End date"
+                                  value={endDate}
+                                  onChange={(e) => setEndDate(e.target.value)}
+                              />
+                              <button
+                                  type="button"
+                                  className="btn btn-outline-danger"
+                                  onClick={handleCancelContract}
+                                  title="ตั้ง End date เป็นวันนี้และยกเลิกสัญญา"
+                              >
+                                  Terminate
+                              </button>
+                          </div>
+                      </div>
+
+                  </div>
+
+              </div>
+
+              {/* ---------- Footer Buttons ---------- */}
+              <div className="d-flex justify-content-center gap-3 pt-3 pb-3">
+                  <button
+                      type="button"
+                      className="btn btn-outline-secondary"
+                      data-bs-dismiss="modal"
+                  >
+                      Cancel
+                  </button>
+
+                  <button
+                      type="submit"
+                      className="btn btn-primary"
+                      // disabled={
+                      //     !firstName ||
+                      //     !lastName ||
+                      //     !email ||
+                      //     !phoneNumber ||
+                      //     !nationalId ||
+                      //     !selectedFloor ||
+                      //     !selectedRoomId ||
+                      //     !packageId ||
+                      //     !startDate
+                      // }
+                  >
+                      Save
+                  </button>
+              </div>
+          </form>
       </Modal>
     </Layout>
   );
