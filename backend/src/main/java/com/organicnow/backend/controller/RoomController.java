@@ -11,7 +11,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/rooms")
 @CrossOrigin(origins = "http://localhost:5173") // อนุญาต frontend
-public class RoomController {
+public class  RoomController {
 
     private final RoomService roomService;
 
