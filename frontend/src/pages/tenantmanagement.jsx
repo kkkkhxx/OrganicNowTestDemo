@@ -255,8 +255,8 @@ function TenantManagement() {
   const showMessageError = (msg) => alert("❌ Error: " + msg);
   const showMessageSave = () => alert("✅ Success!");
 
-  return (
-    <Layout title="Tenant Management" icon="bi bi-people" notifications={3}>
+    return (
+    <Layout title="Tenant Management" icon="pi pi-user" notifications={3}>
       <div className="container-fluid">
         <div className="row min-vh-100">
           {/* Main */}
@@ -495,7 +495,7 @@ function TenantManagement() {
                             />
                         </div>
 
-                        <div className="col-md-12">
+                        <div className="col-md-6">
                             <label className="form-label">Email</label>
                             <input
                                 type="email"
@@ -516,6 +516,9 @@ function TenantManagement() {
                         <div className="col-md-6">
                             <label className="form-label">Floor</label>
                             <div className="position-relative">
+                                <select className="form-select">
+                                    <option>1</option>
+                                </select>
                                 {/*<select*/}
                                 {/*    className="form-select"*/}
                                 {/*    value={selectedFloor}*/}
@@ -534,6 +537,10 @@ function TenantManagement() {
                         <div className="col-md-6">
                             <label className="form-label">Room</label>
                             <div className="position-relative">
+                                <select className="form-select">
+                                    <option>101</option>
+                                    <option>102</option>
+                                </select>
                                 {/*<select*/}
                                 {/*    className="form-select"*/}
                                 {/*    value={selectedRoomId}*/}
@@ -551,7 +558,14 @@ function TenantManagement() {
                                 {/*</select>*/}
                             </div>
                         </div>
+                    </div>
+                </div>
 
+                {/* ---------- Contract Information ---------- */}
+                <div className="mb-4">
+                    <div className="fw-semibold mb-2">Contract Information</div>
+
+                    <div className="row g-3">
                         <div className="col-md-6">
                             <label className="form-label">Package</label>
                             <div className="position-relative">
@@ -571,6 +585,19 @@ function TenantManagement() {
                         </div>
 
                         <div className="col-md-6">
+                            <label className="form-label">Sign date</label>
+                            <div className="position-relative">
+                                <input
+                                    type="date"
+                                    className="form-control"
+                                    placeholder="Tenant Sign date"
+                                    // value={startDate}
+                                    // onChange={(e) => setStartDate(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
                             <label className="form-label">Start date</label>
                             <div className="position-relative">
                                 <input
@@ -583,6 +610,7 @@ function TenantManagement() {
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 {/* ---------- Footer Buttons ---------- */}
@@ -598,17 +626,17 @@ function TenantManagement() {
                     <button
                         type="submit"
                         className="btn btn-primary"
-                        disabled={
-                            !firstName ||
-                            !lastName ||
-                            !email ||
-                            !phoneNumber ||
-                            !nationalId ||
-                            !selectedFloor ||
-                            !selectedRoomId ||
-                            !packageId ||
-                            !startDate
-                        }
+                        // disabled={
+                        //     !firstName ||
+                        //     !lastName ||
+                        //     !email ||
+                        //     !phoneNumber ||
+                        //     !nationalId ||
+                        //     !selectedFloor ||
+                        //     !selectedRoomId ||
+                        //     !packageId ||
+                        //     !startDate
+                        // }
                     >
                         Save
                     </button>
