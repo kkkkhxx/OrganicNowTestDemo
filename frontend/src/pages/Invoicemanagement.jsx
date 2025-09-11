@@ -351,9 +351,6 @@ function InvoiceManagement() {
 
                                     {/* Right cluster: Bulk delete / Create */}
                                     <div className="d-flex align-items-center gap-2">
-                                        <button className="btn btn-outline-light text-danger border-0">
-                                            <i className="bi bi-trash"></i>
-                                        </button>
                                         <button
                                             type="button"
                                             className="btn btn-primary"
@@ -372,14 +369,15 @@ function InvoiceManagement() {
                             <table className="table text-nowrap">
                                 <thead>
                                     <tr>
-                                        <th className="text-center header-color checkbox-cell">
+                                        {/*<th className="text-center header-color checkbox-cell">
                                             <input
                                                 type="checkbox"
                                                 checked={isAllSelected}
                                                 onChange={handleSelectAll}
                                                 aria-label="Select all rows"
                                             />
-                                        </th>
+                                        </th>*/}
+                                        <th className="text-center align-middle header-color">Order</th>
                                         <th className="text-center align-middle header-color">Create date</th>
                                         <th className="text-start align-middle header-color">First Name</th>
                                         <th className="text-start align-middle header-color">Floor</th>
@@ -399,13 +397,16 @@ function InvoiceManagement() {
                                     {filtered.length > 0 ? (
                                         filtered.map((item, idx) => (
                                             <tr key={idx}>
-                                                <td className="align-middle text-center checkbox-cell">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedItems.includes(idx)}
-                                                        onChange={() => handleSelectRow(idx)}
-                                                        aria-label={`Select row ${idx + 1}`}
-                                                    />
+                                                {/*<td className="align-middle text-center checkbox-cell">*/}
+                                                {/*    <input*/}
+                                                {/*        type="checkbox"*/}
+                                                {/*        checked={selectedItems.includes(idx)}*/}
+                                                {/*        onChange={() => handleSelectRow(idx)}*/}
+                                                {/*        aria-label={`Select row ${idx + 1}`}*/}
+                                                {/*    />*/}
+                                                {/*</td>*/}
+                                                <td className="align-middle">
+                                                    {(currentPage - 1) * pageSize + idx + 1}
                                                 </td>
                                                 <td className="align-middle text-center">{item.createDate}</td>
                                                 <td className="align-middle text-start">{item.firstName}</td>
