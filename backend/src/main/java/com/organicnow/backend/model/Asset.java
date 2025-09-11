@@ -3,7 +3,6 @@ package com.organicnow.backend.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(
