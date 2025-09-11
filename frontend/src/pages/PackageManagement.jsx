@@ -279,6 +279,15 @@ function PackageManagement() {
                         {/* Table */}
                         <div className="table-wrapper mt-3">
                             <table className="table text-nowrap">
+                                {/* กำหนดสัดส่วนคอลัมน์: Order แคบ, Name ยืดเต็ม, Action แคบ */}
+                                <colgroup>
+                                    <col style={{ width: 80 }} />
+                                    <col style={{ width: 160 }} />
+                                    <col style={{ width: 100 }} />
+                                    <col />
+                                    <col style={{ width: 120 }} />
+                                </colgroup>
+
                                 <thead>
                                 <tr>
                                     {/*<th className="text-center header-color checkbox-cell">*/}
@@ -360,7 +369,12 @@ function PackageManagement() {
             </div>
 
             {/* Create Package Modal */}
-            <Modal id="createPackageModal" title="Create Package" icon="bi bi-sticky" size="modal-lg">
+            <Modal
+                id="createPackageModal"
+                title="Create Package"
+                con="bi bi-sticky"
+                size="modal-lg"
+            >
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
