@@ -15,6 +15,7 @@ import MaintenanceSchedule from "./pages/MaintenanceSchedule";
 import RoomManagement from "./pages/roommanagement";
 import MaintenanceRequest from "./pages/maintenancerequest";
 import AssetManagement from "./pages/AssetManagement.jsx";
+import MaintenanceDetails from  "./pages/MaintenanceDetails";
 
 const router = createBrowserRouter([
     { path: "/", element: <Dashboard /> },
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
     { path: "/Roommanagement", element: <RoomManagement /> },
     { path: "/Maintenancerequest", element: <MaintenanceRequest /> },
     { path: "/AssetManagement", element: <AssetManagement /> },
+    { path: "/MaintenanceDetails", element: <MaintenanceDetails />}
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
