@@ -20,7 +20,7 @@ const router = createBrowserRouter([
   { path: "/test", element: <Test /> },
   { path: "/test2", element: <Test2 /> },
   { path: "/TenantManagement", element: <TenantManagement /> },
-  { path: "/TenantDetail", element: <TenantDetail /> },
+  { path: "/tenantdetail/:contractId", element: <TenantDetail /> },
   { path: "/RoomDetail", element: <RoomDetail /> },
   { path: "/Invoicemanagement", element: <Invoicemanagement /> },
   { path: "/InvoiceDetails", element: <InvoiceDetails /> },
