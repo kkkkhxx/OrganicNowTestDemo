@@ -24,7 +24,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
         join c.tenant t
         join c.room r
         join c.packagePlan p
-        order by t.firstName asc, t.lastName asc
+        order by c.signDate desc
     """)
     List<TenantDto> findTenantRows();
 }

@@ -184,24 +184,28 @@ function TenantManagement() {
         endDate: endDate ? `${endDate}T23:59:59` : null,
         deposit,
         rentAmountSnapshot,
-        signDate: new Date().toISOString(), // auto log sign date
+        signDate: new Date().toISOString(),
       };
 
-        // ✅ ส่ง payload เข้า checkValidation
       if (checkValidation(payload) === false) return false;
 
-        const res = await axios.post(`${apiPath}/tenant/create`, payload, {
-          withCredentials: true,
+      const res = await axios.post(`${apiPath}/tenant/create`, payload, {
+        withCredentials: true,
       });
 
       if (res.status === 200 || res.status === 201) {
-          document.getElementById("modalForm_btnClose")?.click();
-          showMessageSave();
-          fetchData(currentPage);
-        } else {
-          showMessageError("Unexpected response: " + JSON.stringify(res.data));
-        }
-      } catch (e) {
+        // ✅ ปิด modal
+        document.getElementById("modalForm_btnClose")?.click();
+
+        // ✅ refresh ตาราง
+        fetchData(currentPage);
+
+        // ✅ แจ้งเตือน
+        showMessageSave();
+      } else {
+        showMessageError("Unexpected response: " + JSON.stringify(res.data));
+      }
+    } catch (e) {
       if (e.response && e.response.status === 409) {
         if (e.response.data.message === "duplicate_email") {
           setAlertvalidation?.("Email already exists");
@@ -772,6 +776,7 @@ function TenantManagement() {
               type="button"
               className="btn btn-outline-secondary"
               data-bs-dismiss="modal"
+              id="modalForm_btnClose"   // ✅ เพิ่ม id ให้ปุ่ม Cancel
             >
               Cancel
             </button>
@@ -779,17 +784,6 @@ function TenantManagement() {
             <button
               type="submit"
               className="btn btn-primary"
-              // disabled={
-              //     !firstName ||
-              //     !lastName ||
-              //     !email ||
-              //     !phoneNumber ||
-              //     !nationalId ||
-              //     !selectedFloor ||
-              //     !selectedRoomId ||
-              //     !packageId ||
-              //     !startDate
-              // }
             >
               Save
             </button>

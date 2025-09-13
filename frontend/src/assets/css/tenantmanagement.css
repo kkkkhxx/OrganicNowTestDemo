@@ -145,23 +145,22 @@
   text-align: center;
 }
 
-/* ✅ Responsive สำหรับจอมือถือ */
-@media (max-width: 768px) {
-  .table th,
-  .table td {
-    padding: 8px;
-  }
+.status-unpaid {
+  background-color: #fff3cd;   /* เหลืองอ่อน */
+  border-left: 5px solid #ffc107; /* เหลืองเข้ม */
+}
 
-  .tm-toolbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.status-paid {
+  background-color: #d4edda;   /* เขียวอ่อน */
+  border-left: 5px solid #28a745; /* เขียวเข้ม */
+}
 
-  .tm-search {
-    width: 100%;
-  }
+.status-overdue {
+  background-color: #f8d7da;   /* แดงอ่อน */
+  border-left: 5px solid #dc3545; /* แดงเข้ม */
+}
 
-  .tm-toolbar > div {
-    width: 100%;
-  }
+.status-default {
+  background-color: #f1f1f1;
+  border-left: 5px solid #ccc;
 }
