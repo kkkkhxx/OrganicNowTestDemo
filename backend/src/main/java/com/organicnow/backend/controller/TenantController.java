@@ -51,7 +51,8 @@ public class TenantController {
         return ResponseEntity.noContent().build();
     }
     // Detail by contractId
-    @GetMapping("/{contractId}")
+    // ใช้ regex บอกว่า contractId ต้องเป็นตัวเลขเท่านั้น
+    @GetMapping("/{contractId:\\d+}")
     public ResponseEntity<TenantDetailDto> detail(@PathVariable Long contractId) {
         TenantDetailDto dto = tenantContractService.getDetail(contractId);
         return ResponseEntity.ok(dto);
