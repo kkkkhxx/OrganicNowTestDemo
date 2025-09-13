@@ -1,3 +1,4 @@
+// src/pages/MaintenanceRequest.jsx
 import React, { useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Layout from "../component/layout";
@@ -215,15 +216,26 @@ function MaintenanceRequest() {
     closeModal();
   };
 
+  // >>> แก้ให้ไปหน้า Details และส่ง mock tenant/technician ไปด้วย
   const viewRow = (row) => {
-    navigate("/requestdetail", {
-      state: {
-        room: row.room,
-        floor: row.floor,
-        status: row.state === "Complete" ? "Available" : "Unavailable",
-        from: location.pathname,
+    const detailRow = {
+      id: `RR${String(row.id).padStart(2, "0")}`,
+      ...row,
+      tenant: {
+        firstName: "John",
+        lastName: "Doe",
+        nationalId: "1-2345-67890-12-3",
+        phone: "012-345-6789",
+        email: "JohnDoe@gmail.com",
+        packageName: "1 Year",
+        signDate: "2024-12-30",
+        startDate: "2024-12-31",
+        endDate: "2025-12-31",
       },
-    });
+      technician: { name: "PSomchai", phone: "012-345-6789" },
+    };
+
+    navigate("/maintenancedetails", { state: { row: detailRow, from: location.pathname } });
   };
 
   const MaintainTypePill = ({ type }) => {
@@ -319,7 +331,7 @@ function MaintenanceRequest() {
                       {filteredRows.length ? (
                         filteredRows.map((row, index) => (
                           <tr key={row.id}>
-                            <td>{index + 1}</td> {/* Display index + 1 for Order */}
+                            <td>{index + 1}</td>
                             <td>{row.room}</td>
                             <td>{row.floor}</td>
                             <td>{row.target}</td>

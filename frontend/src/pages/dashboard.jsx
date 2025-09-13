@@ -39,7 +39,7 @@ function Dashboard() {
       { number: 104, status: "available" },
       { number: 105, status: "available" },
       { number: 106, status: "available" },
-      { number: 107, status: "available" },
+      { number: 107, status: "unavailable" },
       { number: 108, status: "available" },
       { number: 109, status: "available" },
       { number: 110, status: "unavailable" },
@@ -56,7 +56,7 @@ function Dashboard() {
       { number: 208, status: "available" },
       { number: 209, status: "available" },
       { number: 210, status: "available" },
-      { number: 211, status: "available" },
+      { number: 211, status: "repair" },
       { number: 212, status: "available" },
     ];
     setRooms(mockRooms);

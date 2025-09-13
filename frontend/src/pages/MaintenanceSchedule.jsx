@@ -356,11 +356,11 @@ function MaintenanceSchedule() {
 
                                             <td className="align-middle text-center">
                                                 <button
-                                                    className="btn btn-link text-danger p-0"
+                                                    className="btn btn-link text-dark p-0"
                                                     onClick={() => deleteRow(item.id)}
                                                     title="Delete"
                                                 >
-                                                    <i className="bi bi-trash"></i>
+                                                    <i className="bi bi-trash-fill"></i>
                                                 </button>
                                             </td>
                                         </tr>
