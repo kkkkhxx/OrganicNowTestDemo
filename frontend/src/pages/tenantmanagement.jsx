@@ -17,7 +17,6 @@ function TenantManagement() {
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
   const [data, setData] = useState([]);
-  const [tenantId, setTenantId] = useState(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -29,7 +28,6 @@ function TenantManagement() {
   const [rentAmountSnapshot, setRentAmountSnapshot] = useState(0);
   const [packageId, setPackageId] = useState("");
   const [startDate, setStartDate] = useState("");
-  // Floor / Room (dependent selects)
   const [rooms, setRooms] = useState([]);
   const [selectedFloor, setSelectedFloor] = useState("");
   const [selectedRoomId, setSelectedRoomId] = useState("");
@@ -50,10 +48,11 @@ function TenantManagement() {
   };
 
   const [packages, setPackages] = useState([]);
+
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/packages", {
+        const res = await axios.get(`${apiPath}/packages`, {
           withCredentials: true,
         });
         if (Array.isArray(res.data)) {
@@ -81,16 +80,15 @@ function TenantManagement() {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/rooms", {
+        const res = await axios.get(`${apiPath}/rooms`, {
           withCredentials: true,
         });
-        console.log("Rooms API data:", res.data); // debug ดูว่า API ส่งอะไรมาจริงๆ
+        console.log("Rooms API data:", res.data); 
 
         if (Array.isArray(res.data)) {
-          setRooms(res.data); // กรณี backend ส่ง array ตรง ๆ
+          setRooms(res.data);
         } else if (Array.isArray(res.data.result)) {
-          setRooms(res.data.result); // ✅ กรณี backend ห่อด้วย result
-          console.log(rooms);
+          setRooms(res.data.result); 
         } else {
           console.warn("Unexpected rooms API format:", res.data);
           setRooms([]);
@@ -111,12 +109,12 @@ function TenantManagement() {
 
   const packageColor = (contractName) => {
     const map = {
-      "3 เดือน": "#FFC73B", // น้ำเงิน
-      "6 เดือน": "#EF98C4", // เขียว
-      "9 เดือน": "#87C6FF", // เหลือง
-      "1 ปี": "#9691F9", // แดง
+      "3 เดือน": "#FFC73B", 
+      "6 เดือน": "#EF98C4", 
+      "9 เดือน": "#87C6FF", 
+      "1 ปี": "#9691F9", 
     };
-    return map[contractName] || "#D3D3D3"; // default เทา
+    return map[contractName] || "#D3D3D3"; 
   };
 
   const fetchData = async (page = 1) => {
@@ -194,13 +192,10 @@ function TenantManagement() {
       });
 
       if (res.status === 200 || res.status === 201) {
-        // ✅ ปิด modal
         document.getElementById("modalForm_btnClose")?.click();
 
-        // ✅ refresh ตาราง
         fetchData(currentPage);
 
-        // ✅ แจ้งเตือน
         showMessageSave();
       } else {
         showMessageError("Unexpected response: " + JSON.stringify(res.data));
@@ -222,18 +217,7 @@ function TenantManagement() {
     }
   };
 
-  const handleEdit = (item) => {
-    setTenantId(item.tenantId);
-    setFirstName(item.firstName || "");
-    setLastName(item.lastName || "");
-    setEmail(item.email || "");
-    setPhoneNumber(item.phoneNumber || "");
-    setNationalId(item.nationalId || "");
-    setAlertvalidation?.("");
-  };
-
   const checkValidation = (payload) => {
-    // 🔹 General Information
     if (!payload.firstName) {
       showMessageError("กรุณากรอก First Name");
       return false;
@@ -255,13 +239,11 @@ function TenantManagement() {
       return false;
     }
 
-    // 🔹 Room Information
     if (!payload.roomId) {
       showMessageError("กรุณาเลือกห้อง");
       return false;
     }
 
-    // 🔹 Contract Information
     if (!payload.packageId) {
       showMessageError("กรุณาเลือก Package");
       return false;
@@ -276,49 +258,6 @@ function TenantManagement() {
     }
 
     return true;
-  };
-
-  const handleSaveUpdate = async () => {
-    try {
-      if (!tenantId) {
-        setAlertvalidation?.("Missing tenantId");
-        return false;
-      }
-      if (checkValidation && checkValidation() === false) return false;
-
-      const payload = { firstName, lastName, email, phoneNumber, nationalId };
-
-      const res = await axios.put(
-        `${apiPath}/tenant/update/${tenantId}`,
-        payload,
-        {
-          withCredentials: true,
-        }
-      );
-
-      if (res.status === 200) {
-        document.getElementById("modalForm_btnClose")?.click();
-        showMessageSave?.();
-        fetchData(currentPage);
-      } else {
-        showMessageError?.("Unexpected response: " + JSON.stringify(res.data));
-      }
-    } catch (e) {
-      if (e.response && e.response.status === 409) {
-        const msg = e.response.data?.message;
-        if (msg === "duplicate_email")
-          setAlertvalidation?.("Email already exists");
-        else if (msg === "duplicate_national_id")
-          setAlertvalidation?.("National ID already exists");
-        else setAlertvalidation?.("Duplicate data");
-        return false;
-      }
-      if (e.response && e.response.status === 401) {
-        showMessagePermission?.();
-      } else {
-        showMessageError?.(e);
-      }
-    }
   };
 
   const handleDelete = async (contractId) => {
@@ -359,7 +298,7 @@ function TenantManagement() {
     setEmail("");
     setPhoneNumber("");
     setNationalId("");
-    setSelectedFloor(""); // ✅ reset floor
+    setSelectedFloor(""); 
     setSelectedRoomId("");
     setPackageId("");
   };
@@ -370,7 +309,7 @@ function TenantManagement() {
       if (pkg && pkg.duration) {
         const start = new Date(startDate);
         const end = new Date(start);
-        end.setMonth(end.getMonth() + pkg.duration); // ✅ บวกเดือน
+        end.setMonth(end.getMonth() + pkg.duration); 
         const yyyy = end.getFullYear();
         const mm = String(end.getMonth() + 1).padStart(2, "0");
         const dd = String(end.getDate()).padStart(2, "0");
@@ -500,7 +439,7 @@ function TenantManagement() {
                                 backgroundColor: packageColor(
                                   packageLabel(item.packageId)
                                 ),
-                                color: "#fff", // ✅ ตัวหนังสือขาว
+                                color: "#fff",
                               }}
                             >
                               {packageLabel(item.packageId)}
@@ -527,7 +466,7 @@ function TenantManagement() {
                             </button>
                             <button
                               className="btn btn-sm form-Button-Edit"
-                              onClick={() => handleEdit(item)}
+                              // onClick={() => handleEdit(item)}
                               aria-label="Edit"
                             >
                               <i className="bi bi-file-earmark-pdf-fill"></i>
@@ -580,7 +519,6 @@ function TenantManagement() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            // ผูก Save กับฟังก์ชันเดิม
             handleSaveCreate();
           }}
         >
@@ -654,7 +592,7 @@ function TenantManagement() {
                     value={selectedFloor}
                     onChange={(e) => {
                       setSelectedFloor(e.target.value);
-                      setSelectedRoomId(""); // reset ห้องเมื่อเปลี่ยนชั้น
+                      setSelectedRoomId(""); 
                     }}
                   >
                     <option value="">Select Floor</option>
@@ -776,7 +714,7 @@ function TenantManagement() {
               type="button"
               className="btn btn-outline-secondary"
               data-bs-dismiss="modal"
-              id="modalForm_btnClose"   // ✅ เพิ่ม id ให้ปุ่ม Cancel
+              id="modalForm_btnClose"
             >
               Cancel
             </button>

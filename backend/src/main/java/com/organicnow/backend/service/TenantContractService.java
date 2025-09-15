@@ -67,7 +67,7 @@ public class TenantContractService {
                 .contractId(contract.getId())
                 .firstName(tenant.getFirstName())
                 .lastName(tenant.getLastName())
-                .email(tenant.getEmail())              // ✅ ใส่ email
+                .email(tenant.getEmail())
                 .floor(room.getRoomFloor())
                 .room(room.getRoomNumber())
                 .packageId(plan.getId())
@@ -114,7 +114,7 @@ public class TenantContractService {
                 .contractId(saved.getId())
                 .firstName(saved.getTenant().getFirstName())
                 .lastName(saved.getTenant().getLastName())
-                .email(saved.getTenant().getEmail())  // ✅ ใส่ email
+                .email(saved.getTenant().getEmail())
                 .floor(saved.getRoom().getRoomFloor())
                 .room(saved.getRoom().getRoomNumber())
                 .packageId(saved.getPackagePlan().getId())
@@ -143,7 +143,8 @@ public class TenantContractService {
         Room room = contract.getRoom();
         PackagePlan plan = contract.getPackagePlan();
 
-        List<Invoice> invoices = invoiceRepository.findByContact_Id(contractId);
+        // ✅ ดึง invoice ของ contractId โดยเรียงจากใหม่ → เก่า
+        List<Invoice> invoices = invoiceRepository.findByContact_IdOrderByIdDesc(contractId);
 
         List<TenantDetailDto.InvoiceDto> invoiceDtos = invoices.stream()
                 .map(inv -> TenantDetailDto.InvoiceDto.builder()

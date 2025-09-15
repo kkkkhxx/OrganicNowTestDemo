@@ -14,7 +14,6 @@ function TenantDetail() {
   const [leftHeight, setLeftHeight] = useState(0);
   const [tenant, setTenant] = useState(null);
 
-  // ✅ state สำหรับ modal edit
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -29,7 +28,6 @@ function TenantDetail() {
   const navigate = useNavigate();
   const { contractId } = useParams();
 
-  // จับความสูงฝั่งซ้าย → set ให้ขวาเท่ากัน
   useEffect(() => {
     if (!tenantInfoRef.current) return;
     const observer = new ResizeObserver(([entry]) => {
@@ -39,33 +37,31 @@ function TenantDetail() {
     return () => observer.disconnect();
   }, []);
 
-  // fetch detail จาก backend
-  useEffect(() => {
-    const fetchTenantDetail = async () => {
-      try {
-        const res = await axios.get(`${apiPath}/tenant/${contractId}`, {
-          withCredentials: true,
-        });
-        setTenant(res.data);
+  const fetchTenantDetail = async () => {
+    try {
+      const res = await axios.get(`${apiPath}/tenant/${contractId}`, {
+        withCredentials: true,
+      });
+      setTenant(res.data);
+      setFirstName(res.data.firstName || "");
+      setLastName(res.data.lastName || "");
+      setEmail(res.data.email || "");
+      setPhoneNumber(res.data.phoneNumber || "");
+      setNationalId(res.data.nationalId || "");
+      setEndDate(res.data.endDate?.split("T")[0] || "");
+      setDeposit(res.data.deposit || "");
+      setRentAmountSnapshot(res.data.rentAmountSnapshot || "");
+      setSignDate(res.data.signDate?.split("T")[0] || "");
+      setStartDate(res.data.startDate?.split("T")[0] || "");
+    } catch (err) {
+      console.error("Error fetching tenant detail:", err);
+      navigate("/tenantmanagement");
+    }
+  };  
 
-        // ✅ set ค่าให้ state สำหรับ modal
-        setFirstName(res.data.firstName || "");
-        setLastName(res.data.lastName || "");
-        setEmail(res.data.email || "");
-        setPhoneNumber(res.data.phoneNumber || "");
-        setNationalId(res.data.nationalId || "");
-        setEndDate(res.data.endDate?.split("T")[0] || "");
-        setDeposit(res.data.deposit || "");
-        setRentAmountSnapshot(res.data.rentAmountSnapshot || "");
-        setSignDate(res.data.signDate?.split("T")[0] || "");
-        setStartDate(res.data.startDate?.split("T")[0] || "");
-      } catch (err) {
-        console.error("Error fetching tenant detail:", err);
-        navigate("/tenantmanagement");
-      }
-    };
+  useEffect(() => {
     if (contractId) fetchTenantDetail();
-  }, [contractId, navigate]);
+  }, [contractId]);
 
   const mapStatus = (status) => {
     switch (status) {
@@ -82,7 +78,7 @@ function TenantDetail() {
 
   const getStatusColor = (status, penaltyTotal) => {
     if (penaltyTotal && penaltyTotal > 0) {
-      return "status-danger"; // ถ้ามี penalty → แดง
+      return "status-danger";  
     }
     switch (status) {
       case 0:
@@ -96,7 +92,6 @@ function TenantDetail() {
     }
   };
 
-  //======= กัน tenant เป็น null ตอน render =======//
   if (!tenant) {
     return (
       <Layout title="Tenant Management" icon="pi pi-user">
@@ -132,8 +127,16 @@ function TenantDetail() {
       );
 
       if (res.status === 200) {
+        await fetchTenantDetail(); // refresh ข้อมูล
+
+      if (res.status === 200) {
+        await fetchTenantDetail(); // refresh ข้อมูล
+
+        // ✅ ปิด modal ด้วยการ click ปุ่ม Cancel
         document.getElementById("modalForm_btnClose")?.click();
+
         alert("✅ Update tenant success!");
+      }
       } else {
         alert("❌ Unexpected response: " + JSON.stringify(res.data));
       }
@@ -169,9 +172,6 @@ function TenantDetail() {
                   </div>
                   {/* Right cluster */}
                   <div className="d-flex align-items-center gap-2">
-                    <button className="btn btn-outline-light text-danger border-0">
-                      <i className="bi bi-trash"></i>
-                    </button>
                     <button
                       type="button"
                       className="btn btn-primary"
@@ -308,21 +308,19 @@ function TenantDetail() {
                                   >
                                     <div className="row mb-1">
                                       <div className="col-4">
-                                        <span className="label">
-                                          Invoice date:
-                                        </span>
+                                        <span className="label">Invoice date:  </span>
                                         <span className="value">
                                           {inv.dueDate?.split("T")[0] || "-"}
                                         </span>
                                       </div>
                                       <div className="col-4">
-                                        <span className="label">Invoice ID:</span>
+                                        <span className="label">Invoice ID: </span>
                                         <span className="value">
                                           {inv.invoiceId}
                                         </span>
                                       </div>
                                       <div className="col-4">
-                                        <span className="label">NET:</span>
+                                        <span className="label">NET:  </span>
                                         <span className="value">
                                           {inv.netAmount} Baht
                                         </span>
@@ -330,19 +328,19 @@ function TenantDetail() {
                                     </div>
                                     <div className="row">
                                       <div className="col-4">
-                                        <span className="label">Status:</span>
+                                        <span className="label">Status:  </span>
                                         <span className="value">
                                           {mapStatus(inv.invoiceStatus)}
                                         </span>
                                       </div>
                                       <div className="col-4">
-                                        <span className="label">Pay date:</span>
+                                        <span className="label">Pay date: </span>
                                         <span className="value">
                                           {inv.payDate?.split("T")[0] || "-"}
                                         </span>
                                       </div>
                                       <div className="col-4">
-                                        <span className="label">Penalty:</span>
+                                        <span className="label">Penalty: </span>
                                         <span className="value">
                                           {inv.penaltyTotal || "-"}
                                         </span>

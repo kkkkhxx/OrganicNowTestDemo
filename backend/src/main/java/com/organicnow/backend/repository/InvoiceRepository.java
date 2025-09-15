@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
-    // ต้องใช้ contact แทน contract
-    List<Invoice> findByContact_Id(Long contractId);
+
+    List<Invoice> findByContact_IdOrderByIdDesc(Long contractId);
+
 }
