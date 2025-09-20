@@ -13,6 +13,7 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true") // อนุญาต frontend
 public class RoomController {
 
+
     private final RoomService roomService;
 
     public RoomController(RoomService roomService) {
