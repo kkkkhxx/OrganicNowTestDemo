@@ -10,7 +10,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/rooms")
-
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true") // อนุญาต frontend
 public class RoomController {
 
