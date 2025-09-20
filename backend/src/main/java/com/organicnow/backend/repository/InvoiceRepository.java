@@ -10,7 +10,10 @@ import java.util.List;
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
-    // ✅ ดึง invoice ตาม contract
+    // ✅ ของคุณ: ดึง invoice ตาม contract (เรียงจากใหม่ไปเก่า)
+    List<Invoice> findByContact_IdOrderByIdDesc(Long contractId);
+
+    // ✅ ของเพื่อน: ดึง invoice ตาม contract
     List<Invoice> findByContact_Id(Long contractId);
 
     /**

@@ -5,6 +5,8 @@ import com.organicnow.backend.dto.TenantDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,6 +20,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             t.lastName,
             r.roomFloor,
             r.roomNumber,
+            r.id,
             p.id,
             c.startDate,
             c.endDate,
@@ -31,6 +34,9 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
         order by c.signDate desc
     """)
     List<TenantDto> findTenantRows();
+
+    // ✅ ใช้เช็คว่า tenant นี้มีสัญญาที่ยัง active อยู่หรือไม่
+    boolean existsByTenant_IdAndStatusAndEndDateAfter(Long tenantId, Integer status, LocalDateTime now);
 
     // ✅ ใช้สำหรับ Dashboard: เช็กว่าห้องยังมีสัญญาที่ Active อยู่ไหม
     @Query("""
