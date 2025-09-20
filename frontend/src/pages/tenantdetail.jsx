@@ -28,6 +28,10 @@ function TenantDetail() {
   const navigate = useNavigate();
   const { contractId } = useParams();
 
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState(""); 
+  const [showAlert, setShowAlert] = useState(false);
+
   useEffect(() => {
     if (!tenantInfoRef.current) return;
     const observer = new ResizeObserver(([entry]) => {
@@ -100,26 +104,39 @@ function TenantDetail() {
     );
   }
 
+  const showMessageError = (msg) => {
+    setAlertMessage("❌ Error: " + msg);
+    setAlertType("error");
+    setShowAlert(true);
+  };
+  const showMessageSave = (msg = "✅ Success!") => {
+    setAlertMessage(msg);
+    setAlertType("success");
+    setShowAlert(true);
+  };
+
   const handleSaveUpdate = async () => {
+    if (!contractId) {
+      showMessageError("Missing contractId");
+      return false;
+    }
+
+    const payload = {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      nationalId,
+      startDate: startDate ? `${startDate}T00:00:00` : null,
+      endDate: endDate ? `${endDate}T23:59:59` : null,
+      deposit,
+      rentAmountSnapshot,
+      signDate: signDate ? `${signDate}T00:00:00` : new Date().toISOString(),
+    };
+
+    if (checkValidation(payload) === false) return false;
+
     try {
-      if (!contractId) {
-        alert("Missing contractId");
-        return false;
-      }
-
-      const payload = {
-        firstName,
-        lastName,
-        email,
-        phoneNumber,
-        nationalId,
-        startDate: startDate ? `${startDate}T00:00:00` : null,
-        endDate: endDate ? `${endDate}T23:59:59` : null,
-        deposit,
-        rentAmountSnapshot,
-        signDate: signDate ? `${signDate}T00:00:00` : new Date().toISOString(),
-      };
-
       const res = await axios.put(
         `${apiPath}/tenant/update/${contractId}`,
         payload,
@@ -127,23 +144,48 @@ function TenantDetail() {
       );
 
       if (res.status === 200) {
-        await fetchTenantDetail(); // refresh ข้อมูล
-
-      if (res.status === 200) {
-        await fetchTenantDetail(); // refresh ข้อมูล
-
-        // ✅ ปิด modal ด้วยการ click ปุ่ม Cancel
+        await fetchTenantDetail();
         document.getElementById("modalForm_btnClose")?.click();
-
-        alert("✅ Update tenant success!");
-      }
+        showMessageSave("อัปเดตข้อมูลสำเร็จ!");
       } else {
-        alert("❌ Unexpected response: " + JSON.stringify(res.data));
+        showMessageError("Unexpected response: " + JSON.stringify(res.data));
       }
     } catch (e) {
       console.error("Update tenant error:", e);
-      alert("❌ Error: " + (e.response?.data?.message || e.message));
+      showMessageError(e.response?.data?.message || e.message);
     }
+  };
+
+  const checkValidation = (payload) => {
+    if (!payload.firstName) {
+      showMessageError("กรุณากรอก First Name");
+      return false;
+    }
+    if (!payload.lastName) {
+      showMessageError("กรุณากรอก Last Name");
+      return false;
+    }
+    if (!payload.phoneNumber) {
+      showMessageError("กรุณากรอก Phone Number");
+      return false;
+    }
+    if (!/^\d{10}$/.test(payload.phoneNumber)) {
+      showMessageError("Phone Number ต้องเป็นตัวเลข 10 หลัก");
+      return false;
+    }
+    if (!payload.email) {
+      showMessageError("กรุณากรอก Email");
+      return false;
+    }
+
+    const sign = new Date(payload.signDate);
+    const start = new Date(payload.startDate);
+    if (start < sign) {
+      showMessageError("Start Date ต้องมากกว่าหรือเท่ากับ Sign Date");
+      return false;
+    }
+
+    return true;
   };
 
   return (
@@ -377,7 +419,6 @@ function TenantDetail() {
           onSubmit={(e) => {
             e.preventDefault();
             handleSaveUpdate();
-            fetchTenantDetail()
           }}
         >
           {/* ---------- General Information ---------- */}
@@ -414,10 +455,15 @@ function TenantDetail() {
               <div className="col-md-6">
                 <label className="form-label">Phone Number</label>
                 <input
-                  type="tel"
+                  type="text"
                   className="form-control"
+                  placeholder="Tenant Phone Number"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, ""); 
+                    if (val.length <= 10) setPhoneNumber(val);     
+                  }}
+                  maxLength={10}
                 />
               </div>
               <div className="col-md-6">
@@ -524,6 +570,7 @@ function TenantDetail() {
               type="button"
               className="btn btn-outline-secondary"
               data-bs-dismiss="modal"
+              id="modalForm_btnClose" 
             >
               Cancel
             </button>
@@ -533,6 +580,25 @@ function TenantDetail() {
           </div>
         </form>
       </Modal>
+      {showAlert && (
+        <div className="custom-alert-overlay">
+          <div className="custom-alert-box">
+            <div className={`custom-alert-icon ${alertType}`}>
+              {alertType === "success" ? "✔️" : "❌"}
+            </div>
+            <div className="custom-alert-title">
+              {alertType === "success" ? "Success" : "Error"}
+            </div>
+            <div className="custom-alert-message">{alertMessage}</div>
+            <button
+              className="custom-alert-btn"
+              onClick={() => setShowAlert(false)}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
