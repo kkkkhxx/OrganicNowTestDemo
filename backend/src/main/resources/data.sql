@@ -17,47 +17,47 @@ INSERT INTO tenant (first_name, last_name, phone_number, email, national_id) VAL
     ON CONFLICT (national_id) DO NOTHING;
 
 -- ========== Contract Type ==========
-INSERT INTO contract_type (contract_type_id, contract_name, duration) VALUES
-                                                                          (1, '3 เดือน', 3),
-                                                                          (2, '6 เดือน', 6),
-                                                                          (3, '9 เดือน', 9),
-                                                                          (4, '1 ปี', 12)
+INSERT INTO contract_type (contract_name, duration) VALUES
+                                                                          ('3 เดือน', 3),
+                                                                          ('6 เดือน', 6),
+                                                                          ('9 เดือน', 9),
+                                                                          ('1 ปี', 12)
     ON CONFLICT (contract_type_id) DO NOTHING;
 
 -- Package Plan
-INSERT INTO package_plan (package_id, contact_type_id, price, is_active) VALUES
-                                                                             (1, 1,  8000.00, 1),
-                                                                             (2, 2, 15000.00, 1),
-                                                                             (3, 3, 21000.00, 1),
-                                                                             (4, 4, 28000.00, 1)
+INSERT INTO package_plan (contract_type_id, price, is_active) VALUES
+                                                                             (1,  8000.00, 1),
+                                                                             (2, 15000.00, 1),
+                                                                             (3, 21000.00, 1),
+                                                                             (4, 28000.00, 1)
     ON CONFLICT (package_id) DO NOTHING;
 
 -- Contract (ชี้ไปที่ package_plan)
-INSERT INTO contract (contract_id, room_id, tenant_id, package_id, sign_date, start_date, end_date, status, deposit, rent_amount_snapshot) VALUES
-                                                                                                                                               (1, 1, 1, 1, '2025-01-01', '2025-02-01', '2025-04-30', 1, 5000.00,  8000.00),
-                                                                                                                                               (2, 2, 2, 2, '2025-01-05', '2025-02-01', '2025-07-31', 1, 5000.00, 15000.00),
-                                                                                                                                               (3, 3, 3, 3, '2025-01-10', '2025-02-01', '2025-10-31', 1, 5000.00, 21000.00)
+INSERT INTO contract (room_id, tenant_id, package_id, sign_date, start_date, end_date, status, deposit, rent_amount_snapshot) VALUES
+                                                                                                                                               (1, 1, 1, '2025-01-01', '2025-02-01', '2025-04-30', 1, 5000.00,  8000.00),
+                                                                                                                                               (2, 2, 2, '2025-01-05', '2025-02-01', '2025-07-31', 1, 5000.00, 15000.00),
+                                                                                                                                               (3, 3, 3, '2025-01-10', '2025-02-01', '2025-10-31', 1, 5000.00, 21000.00)
     ON CONFLICT (contract_id) DO NOTHING;
 
 
 -- ========== Invoice ==========
 -- Somchai (Contract 1)
-INSERT INTO invoice (invoice_id, contract_id, create_date, due_date, invoice_status, pay_date, pay_method, sub_total, penalty_total, net_amount) VALUES
-                                                                                                                                                     (1, 1, '2025-02-01', '2025-02-05', 1, '2025-02-03', 1,  8000, 0,  8000),
-                                                                                                                                                     (2, 1, '2025-03-01', '2025-03-05', 1, '2025-03-04', 1,  8000, 0,  8000),
-                                                                                                                                                     (3, 1, '2025-04-01', '2025-04-05', 1, '2025-04-02', 1,  8000, 0,  8000)
+INSERT INTO invoice (contract_id, create_date, due_date, invoice_status, pay_date, pay_method, sub_total, penalty_total, net_amount) VALUES
+                                                                                                                                                     (1, '2025-02-01', '2025-02-05', 1, '2025-02-03', 1,  8000, 0,  8000),
+                                                                                                                                                     (1, '2025-03-01', '2025-03-05', 1, '2025-03-04', 1,  8000, 0,  8000),
+                                                                                                                                                     (1, '2025-04-01', '2025-04-05', 1, '2025-04-02', 1,  8000, 0,  8000)
     ON CONFLICT (invoice_id) DO NOTHING;
 
 -- Suda (Contract 2)
-INSERT INTO invoice (invoice_id, contract_id, create_date, due_date, invoice_status, pay_date, pay_method, sub_total, penalty_total, net_amount) VALUES
-                                                                                                                                                     (4, 2, '2025-02-01', '2025-02-05', 1, '2025-02-05', 2, 15000, 0, 15000),
-                                                                                                                                                     (5, 2, '2025-03-01', '2025-03-05', 1, '2025-03-03', 2, 15000, 0, 15000),
-                                                                                                                                                     (6, 2, '2025-04-01', '2025-04-05', 0, NULL, NULL,  15000, 0, 15000)
+INSERT INTO invoice (contract_id, create_date, due_date, invoice_status, pay_date, pay_method, sub_total, penalty_total, net_amount) VALUES
+                                                                                                                                                     (2, '2025-02-01', '2025-02-05', 1, '2025-02-05', 2, 15000, 0, 15000),
+                                                                                                                                                     (2, '2025-03-01', '2025-03-05', 1, '2025-03-03', 2, 15000, 0, 15000),
+                                                                                                                                                     (2, '2025-04-01', '2025-04-05', 0, NULL, NULL,  15000, 0, 15000)
     ON CONFLICT (invoice_id) DO NOTHING;
 
 -- Anan (Contract 3)
-INSERT INTO invoice (invoice_id, contract_id, create_date, due_date, invoice_status, pay_date, pay_method, sub_total, penalty_total, net_amount, penalty_applied_at) VALUES
-                                                                                                                                                                         (7, 3, '2025-02-01', '2025-02-05', 1, '2025-02-04', 1, 21000, 0, 21000, NULL),
-                                                                                                                                                                         (8, 3, '2025-03-01', '2025-03-05', 1, '2025-03-15', 1, 21000, 500, 21500, '2025-03-10'),
-                                                                                                                                                                         (9, 3, '2025-04-01', '2025-04-05', 0, NULL, NULL,  21000, 0, 21000, NULL)
+INSERT INTO invoice (contract_id, create_date, due_date, invoice_status, pay_date, pay_method, sub_total, penalty_total, net_amount, penalty_applied_at) VALUES
+                                                                                                                                                                         (3, '2025-02-01', '2025-02-05', 1, '2025-02-04', 1, 21000, 0, 21000, NULL),
+                                                                                                                                                                         (3, '2025-03-01', '2025-03-05', 1, '2025-03-15', 1, 21000, 500, 21500, '2025-03-10'),
+                                                                                                                                                                         (3, '2025-04-01', '2025-04-05', 0, NULL, NULL,  21000, 0, 21000, NULL)
     ON CONFLICT (invoice_id) DO NOTHING;
