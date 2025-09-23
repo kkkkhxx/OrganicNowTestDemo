@@ -17,7 +17,7 @@ public class PackagePlan {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contact_type_id", nullable = false)
+    @JoinColumn(name = "contract_type_id", nullable = false)
     private ContractType contractType;
 
     @Min(0)
