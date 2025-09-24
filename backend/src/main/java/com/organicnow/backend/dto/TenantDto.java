@@ -16,22 +16,31 @@ public class TenantDto {
     private String lastName;
     private String phoneNumber;
     private String email;
-    private String room;
-    private Integer floor;
-    private Long roomId;
 
-    // ✅ เอา packageId กลับมา
+    private String room;     // room number
+    private Integer floor;   // room floor
+    private Long roomId;     // room id
+
+    // 🔹 package plan
     private Long packageId;
 
-    // ✅ ใช้ LocalDateTime ให้ตรงกับ Contract entity
+    // 🔹 contract type (ใช้ filter)
+    private Long contractTypeId;
+    private String contractName;
+
+    // 🔹 วันที่
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime signDate;
 
+    // 🔹 เงิน
     private BigDecimal deposit;
     private BigDecimal rentAmountSnapshot;
 
-    // 🔧 Custom constructor ให้ match กับ query ใน ContractRepository
+    // 🔹 สถานะ (0=หมดอายุ, 1=ใช้งาน, 2=ยังไม่เริ่ม, 3=ยกเลิก)
+    private Integer status;
+
+    // ---------- Constructor สำหรับ JPQL ----------
     public TenantDto(
             Long contractId,
             String firstName,
@@ -40,10 +49,13 @@ public class TenantDto {
             String room,
             Long roomId,
             Long packageId,
+            Long contractTypeId,
+            String contractName,
             LocalDateTime startDate,
             LocalDateTime endDate,
             String phoneNumber,
-            String email
+            String email,
+            Integer status   // 👈 เพิ่มมา
     ) {
         this.contractId = contractId;
         this.firstName = firstName;
@@ -52,9 +64,12 @@ public class TenantDto {
         this.room = room;
         this.roomId = roomId;
         this.packageId = packageId;
+        this.contractTypeId = contractTypeId;
+        this.contractName = contractName;
         this.startDate = startDate;
         this.endDate = endDate;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.status = status;   // 👈 set ค่า
     }
 }
